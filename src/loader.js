@@ -9,6 +9,12 @@
  * .....
  * our custom loader will load './api/helo/helo1.js' automatically :-)
  * 
+ * NOTE: 
+ * if you don't use register : node --loader=./dist/loader.js ./dist/index.js
+ * Node.js will reminder you with one warning : 
+ * (node:9564) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+*  --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./dist/loader.js", pathToFileURL("./"));'
+ * (Use `node --trace-warnings ...` to show where the warning was created)
  */
 import { isBuiltin } from 'node:module';
 import { dirname } from 'node:path';

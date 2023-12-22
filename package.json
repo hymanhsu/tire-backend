@@ -7,7 +7,7 @@
     "clean": "npx tsc --build --clean",
     "prebuild": "eslint -c .eslintrc.json ",
     "build": "npx tsc",
-    "start": "node --import ./dist/register.js .", 
+    "start": "node --import ./dist/register.js .",
     "dev": "tsx watch src/index.ts"
   },
   "type": "module",
@@ -21,8 +21,7 @@
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "resolve": "^1.22.8",
-    "response-time": "^2.3.2",
-    "systemjs": "^6.14.2"
+    "response-time": "^2.3.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
