@@ -5,6 +5,7 @@
 -- roles
 INSERT INTO u_roles (id, session_ttl) VALUES('ROOT', 1);
 INSERT INTO u_roles (id, session_ttl) VALUES('ADMN', 8);
+INSERT INTO u_roles (id, session_ttl) VALUES('MERT', 8);
 INSERT INTO u_roles (id, session_ttl) VALUES('MANR', 8);
 INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 8);
 INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 24);
