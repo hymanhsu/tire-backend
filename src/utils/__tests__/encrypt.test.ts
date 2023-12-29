@@ -1,5 +1,5 @@
-import { md5_string, aes_encrypt, aes_decrypt, Encryped } from "@App/utils/encrypt"
-import {log} from "console"
+import { md5_string, aes_encrypt, aes_decrypt, Encryped } from "../encrypt";
+import {log} from "console";
 
 describe('encrypt module', () => {
     test('md5_string', () => {

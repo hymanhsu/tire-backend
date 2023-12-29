@@ -11,7 +11,7 @@ INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 8);
 INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 24);
 
 -- users
-INSERT INTO u_users (id, user_name, role_id) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'ROOT');
+INSERT INTO u_users (id, user_name, role_id, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'ROOT', '6661236789', 'root666@gmail.com');
 INSERT INTO u_users (id, user_name, role_id) VALUES('odTKh0e9eCCSAt63J5rec', 'admin01', 'ADMN');
 INSERT INTO u_users (id, user_name, role_id) VALUES('joZb8dPA9YmgQBBy7rNfH', 'manager01', 'MANR');
 INSERT INTO u_users (id, user_name, role_id) VALUES('kRglaJo7vCIM6ALrHm8Jf', 'staff01', 'STAF');

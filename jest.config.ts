@@ -1,9 +1,9 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   verbose: true,
-  preset: 'ts-jest/presets/default-esm',
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: ['.ts', '.jsx'],
   moduleNameMapper: {
     '^@App/(.*)$': '<rootDir>/src/$1',
     '^(\\.{1,2}/.*)\\.js$': '$1',
@@ -11,11 +11,15 @@ module.exports = {
   transform: {
     // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
     // '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
-    '^.+\\.tsx?$': [
+    '^.+\\.(js|jsx|ts|tsx|mjs)$': [
       'ts-jest',
       {
         useESM: true,
       },
     ],
-  },  
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(nanoid)/)'
+  ],
+  // https://dev.to/steveruizok/jest-and-esm-cannot-use-import-statement-outside-a-module-4mmj
 };
