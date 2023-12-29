@@ -6,7 +6,8 @@
   "scripts": {
     "clean": "npx tsc --build --clean",
     "prebuild": "eslint -c .eslintrc.json ",
-    "build": "npx tsc",
+    "test": "npx jest --silent false --verbose true --collectCoverage",
+    "build": "npx tsc -p tsconfig.build.json",
     "start": "node --import ./dist/register.js .",
     "dev": "tsx watch src/index.ts"
   },
@@ -17,22 +18,28 @@
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "resolve": "^1.22.8",
-    "response-time": "^2.3.2"
+    "response-time": "^2.3.2",
+    "save": "^2.9.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
     "@types/helmet": "^4.0.0",
+    "@types/jest": "^29.5.11",
     "@types/node": "^20.10.5",
     "@types/response-time": "^2.3.8",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }

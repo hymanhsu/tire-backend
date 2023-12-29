@@ -17,6 +17,9 @@ INSERT INTO u_users (id, user_name, role_id) VALUES('joZb8dPA9YmgQBBy7rNfH', 'ma
 INSERT INTO u_users (id, user_name, role_id) VALUES('kRglaJo7vCIM6ALrHm8Jf', 'staff01', 'STAF');
 INSERT INTO u_users (id, user_name, role_id) VALUES('EuoPIozzbRNQGsdoFUtxM', 'customer01', 'CUST');
 
+-- auths
+INSERT INTO u_auths (id, user_id, login_name, auth_pass, session_ttl) VALUES('vZQf6t4wct14PZYZbLfNH', 'AWPo68O4So3oederv9jiJ', 'root', '', 1);
+
 -- Categories of products
 ---------------------------------------------------
 INSERT INTO categories (id, title) VALUES('101', 'Tire');
