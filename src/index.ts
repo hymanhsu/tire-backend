@@ -6,8 +6,9 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
 import {heloRouter} from '@App/api/helo/helo1';
+import {authRouter} from '@App/api/user/auth';
 
-
+// load .env
 dotenv.config();
 
 const app: Express = express();
@@ -16,11 +17,12 @@ const app: Express = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
 
 // setting routers
 app.use("/api/helo", heloRouter);
-app.use("/api/auth", heloRouter);
+app.use("/api/auth", authRouter);
 
 
 const port = process.env.PORT || 3000;

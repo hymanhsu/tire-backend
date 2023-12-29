@@ -1,8 +1,14 @@
 import express, { Express, Request, Response } from "express";
 
-export const heloRouter = express.Router();
+export const authRouter = express.Router();
 
-heloRouter.get("/login", (req: Request, res: Response) => {
+type AuthRequest = {
+    loginName : string;
+    password : string;
+};
+
+authRouter.post("/login", (req: Request, res: Response) => {
+    const authRequest : AuthRequest = req.body;
     res.send("Express + TypeScript Server");
 });
 
