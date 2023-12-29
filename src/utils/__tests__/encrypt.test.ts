@@ -10,7 +10,7 @@ describe('encrypt module', () => {
 
     test('aes_encrypt', () => {
         const result = aes_encrypt("helloworld");
-        log("rrrr = "+result);
+        // log("rrrr = "+result);
         expect(result.encrypted).toHaveLength(32);
     });
 

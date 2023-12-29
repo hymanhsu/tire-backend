@@ -32,8 +32,14 @@ const baseURL = pathToFileURL(cwd() + '/').href;
 export async function resolve(specifier, context, next) {
   const { parentURL = baseURL } = context;
 
+  console.log("specifier="+specifier);
+
   if (isBuiltin(specifier)) {
     return next(specifier, context);
+  }
+
+  if (specifier.startsWith("@App")){
+    specifier = specifier.replace("@App",".");
   }
 
   // `resolveAsync` works with paths, not URLs

@@ -52,7 +52,7 @@ CREATE TABLE u_auths (
     -- the user who logined in 
     login_name VARCHAR(100) UNIQUE,
     -- login name (can be used to login)
-    auth_pass VARCHAR(512),
+    auth_pass VARCHAR(32),
     -- md5 string of readable password
     session_ttl INTEGER,
     -- how long user can live after logining in, unit is hour

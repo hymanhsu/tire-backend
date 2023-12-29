@@ -5,7 +5,7 @@ import responseTime from 'response-time';
 import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
-import {heloRouter} from './api/helo/helo1';
+import {heloRouter} from '@App/api/helo/helo1';
 
 
 dotenv.config();
@@ -20,7 +20,7 @@ app.use(responseTime());
 
 // setting routers
 app.use("/api/helo", heloRouter);
-
+app.use("/api/auth", heloRouter);
 
 
 const port = process.env.PORT || 3000;
