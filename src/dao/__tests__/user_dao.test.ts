@@ -1,5 +1,6 @@
-import { UserInfo, findUserByLoginName} from "../user_dao"
-import {NotFoundAuthenRecord} from '@App/util/errcode'
+import { UserInfo, findUserByLoginName, createUserAndAuth} from "../user_dao"
+import {FailToCreateUser, NotFoundAuthenRecord} from '@App/util/errcode'
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {log} from "console"
 
 describe('auth module', () => {
@@ -31,6 +32,17 @@ describe('auth module', () => {
         const loginName = "root";
         const password = "wrong_password"; 
         await expect(findUserByLoginName(loginName, password)).rejects.toEqual(NotFoundAuthenRecord);
+    });
+
+    test('createUserAndAuth success', async () => {
+        const userName = "staff-0001";
+        const password = "p0001"; 
+        await expect(createUserAndAuth(
+            userName,userName,"STAF","W32 Ave.","5551234567","5555@gmai.com",
+            "",userName,password, 8,
+        ))
+        .rejects.toEqual(FailToCreateUser);
+        // .resolves.toHaveLength(21);
     });
 
 });

@@ -21,12 +21,8 @@ export class CError extends Error {
  */
 
 export const NotFoundAuthenRecord = new CError(100001, 'NotFoundAuthenRecord','Not found the record of authentication!');
-
 export const FailToVerifyToken = new CError(100002, 'FailToVerifyToken','Fail to verify token!');
-
-
-
-export const FailToCreateLoginSessionRecord = new CError(200001, 'FailToCreateLoginSessionRecord','Fail to create login session db record!');
-
+export const FailToCreateLoginSessionRecord = new CError(100003, 'FailToCreateLoginSessionRecord','Fail to create login session db record!');
+export const FailToCreateUser = new CError(100004, 'FailToCreateUser','Fail to create user!');
 
 

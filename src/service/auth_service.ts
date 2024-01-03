@@ -1,7 +1,23 @@
-import { LoginSession, UserInfo, createLoginSession, findUserByLoginName } from "@App/dao/user_dao";
-import { CError, FailToVerifyToken } from "@App/util/errcode";
-import jwt from "jsonwebtoken";
+import { LoginSession, UserInfo, createLoginSession, findUserByLoginName, createUserAndAuth } from "@App/dao/user_dao"
+import { CError, FailToVerifyToken } from "@App/util/errcode"
+import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
+import jwt from "jsonwebtoken"
 
+
+/**
+ * Signup
+ * @param userName 
+ * @param phoneNumber 
+ * @param email 
+ * @param loginName 
+ * @param password 
+ */
+export async function signup(loginName:string, phoneNumber:string, email:string, password:string): Promise<string> {
+    return createUserAndAuth(
+        loginName, loginName, ROLE_CUST, "", phoneNumber, email, "",
+        loginName, password, get_session_ttl(ROLE_CUST)
+    );
+}
 
 /**
  * Login
