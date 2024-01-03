@@ -93,7 +93,7 @@ authRouter.post("/logout", async (req: Request, res: Response) => {
     .then((loginSession) => {
         res.json(
             {
-                meta: {status:true, message: ""},
+                meta: {status:true, message: "ok"},
                 data: {}
             }
         );
