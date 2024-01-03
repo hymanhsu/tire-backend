@@ -3,7 +3,7 @@
  */
 import { prisma } from '@App/util/dbwrapper'
 import { md5_string } from "@App/util/encrypt"
-import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, NotFoundAuthenRecord } from '@App/util/errcode'
+import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord } from '@App/util/errcode'
 import { generate_id } from '@App/util/genid';
 
 
@@ -30,20 +30,25 @@ export type UserInfo = {
  */
 export async function findUserByLoginName(loginName: string, password: string): Promise<UserInfo> {
     const encodedPassword = md5_string(password);
-    const userInfos: UserInfo[] = await prisma.$queryRawUnsafe(
-        'SELECT u.*, a.session_ttl  FROM u_users u, u_auths a ' +
-        'WHERE u.id = a.user_id AND u.invalid = FALSE AND a.invalid = FALSE ' +
-        'AND a.auth_pass = $1 AND (u.phone_number = $2 OR u.email = $3 OR a.login_name = $4)',
-        encodedPassword,
-        loginName, loginName, loginName
-    );
-    return new Promise((resolve, reject) => {
-        if (userInfos === undefined || userInfos.length === 0) {
-            reject(NotFoundAuthenRecord);
-        } else {
-            resolve(userInfos[0]);
-        }
-    });
+    try{
+        const userInfos: UserInfo[] = await prisma.$queryRawUnsafe(
+            'SELECT u.*, a.session_ttl  FROM u_users u, u_auths a ' +
+            'WHERE u.id = a.user_id AND u.invalid = FALSE AND a.invalid = FALSE ' +
+            'AND a.auth_pass = $1 AND (u.phone_number = $2 OR u.email = $3 OR a.login_name = $4)',
+            encodedPassword,
+            loginName, loginName, loginName
+        );
+        return new Promise((resolve, reject) => {
+            if (userInfos === undefined || userInfos.length === 0) {
+                reject(NotFoundAuthenRecord);
+            } else {
+                resolve(userInfos[0]);
+            }
+        });
+    }catch(error){
+        console.error(error);
+        return Promise.reject(NotFoundAuthenRecord);
+    }
 }
 
 export type LoginSession = {
@@ -52,23 +57,25 @@ export type LoginSession = {
     role_id: string;
     user_agent: string;
     ttl: number;
-    exp_at: Date;
+    exp: number;
 };
 
 /**
  * Create login session 
- * @param session 
+ * @param userId 
+ * @param roleId 
+ * @param userAgent 
+ * @param ttl : seconds
  * @returns 
  */
 export async function createLoginSession(userId: string, roleId: string, userAgent: string, ttl: number): Promise<LoginSession> {
-    let expAt = new Date(Date.now() + ttl * (60 * 60 * 1000));
     try {
         const loginSession = await prisma.u_login_sessions.create({
             data: {
                 id: generate_id(),
                 user_id: userId,
                 user_agent: userAgent,
-                exp_at: expAt,
+                session_ttl: ttl,
             }
         });
         return Promise.resolve({
@@ -76,8 +83,8 @@ export async function createLoginSession(userId: string, roleId: string, userAge
             user_id: loginSession.user_id as string,
             role_id: roleId,
             user_agent: loginSession.user_agent as string,
-            ttl: ttl * (60 * 60),
-            exp_at: loginSession.exp_at,
+            ttl: ttl,
+            exp: 0,
         });
     } catch (error) {
         console.error(error);
@@ -85,6 +92,41 @@ export async function createLoginSession(userId: string, roleId: string, userAge
     }
 }
 
+/**
+ * Update login session
+ * @param sessionId 
+ * @returns 
+ */
+export async function updateLoginSession(sessionId:string): Promise<void> {
+    try {
+        const result: number = await prisma.$executeRaw`UPDATE u_login_sessions SET renew_count=renew_count+1 WHERE id=${sessionId}`;
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.resolve();
+    }
+}
+
+/**
+ * Invalidate login session
+ * @param sessionId 
+ * @returns 
+ */
+export async function invalidateLoginSession(sessionId:string): Promise<void> {
+    try{
+        await prisma.u_login_sessions.update({
+            where:{
+                id: sessionId,
+            },
+            data: {
+                invalid: true,
+            }
+        });
+    }catch(error){
+        console.error(error);
+        return Promise.reject(FailToInvalidateLoginSession);
+    }
+}
 
 /**
  * Create user & auth records in a transaction

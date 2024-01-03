@@ -22,9 +22,9 @@ describe('auth module', () => {
         const token = await login(loginName, password, userAgent);
         // log("token = "+token);
         expect(token).toMatch(/.+\..+\..+/);
-        const loginSession = await verify_token(token);
+        const verifyResult = await verify_token(token, false);
         // log("sesssssssssssss = "+JSON.stringify(loginSession));
-        expect(loginSession.role_id).toBe("ROOT");
+        expect(verifyResult.loginSession.role_id).toBe("ROOT");
     });
 
     test('verify_token failed', async () => {
@@ -34,7 +34,7 @@ describe('auth module', () => {
         const token = await login(loginName, password, userAgent); -['/']
         log("token = "+token);
         expect(token).toMatch(/.+\..+\..+/);
-        expect(verify_token(token+"!!!!")).rejects.toEqual(FailToVerifyToken);
+        expect(verify_token(token+"!!!!",false)).rejects.toEqual(FailToVerifyToken);
     });
 
     test('signup success', async () => {

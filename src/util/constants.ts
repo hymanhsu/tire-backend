@@ -16,18 +16,27 @@ export const ROLE_CUST = "CUST";
 export const get_session_ttl = (roleId: string) => {
     switch (roleId) {
         case ROLE_ROOT:
-            return 1;
+            return 1 * 60 * 60;
         case ROLE_ADMN:
-            return 8;
+            return 8 * 60 * 60;
         case ROLE_MERT:
-            return 8;
+            return 8 * 60 * 60;
         case ROLE_MANR:
-            return 8;
+            return 8 * 60 * 60;
         case ROLE_STAF:
-            return 8;
+            return 8 * 60 * 60;
         case ROLE_CUST:
-            return 24;
+            return 24 * 60 * 60;
     }
     return 0;
 }
+
+export interface BaseResponse {
+    meta: {
+        status: boolean,
+        message: string,
+    },
+    data: any,
+};
+
 

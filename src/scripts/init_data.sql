@@ -3,12 +3,12 @@
 
 
 -- roles
-INSERT INTO u_roles (id, session_ttl) VALUES('ROOT', 1);
-INSERT INTO u_roles (id, session_ttl) VALUES('ADMN', 8);
-INSERT INTO u_roles (id, session_ttl) VALUES('MERT', 8);
-INSERT INTO u_roles (id, session_ttl) VALUES('MANR', 8);
-INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 8);
-INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 24);
+INSERT INTO u_roles (id, session_ttl) VALUES('ROOT', 3600);
+INSERT INTO u_roles (id, session_ttl) VALUES('ADMN', 28800);
+INSERT INTO u_roles (id, session_ttl) VALUES('MERT', 28800);
+INSERT INTO u_roles (id, session_ttl) VALUES('MANR', 28800);
+INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 28800);
+INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 86400);
 
 -- users
 INSERT INTO u_users (id, user_name, role_id, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'ROOT', '6661236789', 'root666@gmail.com');

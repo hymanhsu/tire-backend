@@ -12,7 +12,7 @@ CREATE TABLE u_roles (
     -- MERT : merchant's owner , MANR : workshop's manager , STAF : workshop's staff, 
     -- CUST : customer
     session_ttl INTEGER,
-    -- how long user can live after logining in, unit is hour
+    -- how long user can live after logining in, unit is seconds
     c_at TIMESTAMP DEFAULT now(),
     u_at TIMESTAMP DEFAULT now()
 );
@@ -72,8 +72,10 @@ CREATE TABLE u_login_sessions (
     -- the user who have logined in 
     user_agent VARCHAR(256),
     -- User-Agent from the brower, which would be used to anylyse customers
-    exp_at TIMESTAMP NOT NULL,
-    -- time of expiration (using the time of server)
+    session_ttl INTEGER,
+    -- how long user can live after logining in, unit is seconds
+    renew_count INTEGER DEFAULT 0,
+    -- the times that user renew his token
     invalid BOOLEAN default FALSE,
     -- invalid = true, means data is invalid
     c_at TIMESTAMP DEFAULT now(),

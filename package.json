@@ -4,6 +4,7 @@
   "description": "Backend server for tire-demo",
   "main": "./dist/index.js",
   "scripts": {
+    "pull_dbschema": "npx prisma db pull && npx prisma generate",
     "clean": "npx tsc --build --clean",
     "prebuild": "eslint -c .eslintrc.json ",
     "test": "dotenv -e .env.test -- npx jest --silent false --verbose true --collectCoverage",

@@ -1,4 +1,4 @@
-import { LoginSession, UserInfo, createLoginSession, findUserByLoginName, createUserAndAuth } from "@App/dao/user_dao"
+import { LoginSession, UserInfo, createLoginSession, updateLoginSession, findUserByLoginName, createUserAndAuth, invalidateLoginSession } from "@App/dao/user_dao"
 import { CError, FailToVerifyToken } from "@App/util/errcode"
 import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
 import jwt from "jsonwebtoken"
@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken"
  * @param loginName 
  * @param password 
  */
-export async function signup(loginName:string, phoneNumber:string, email:string, password:string): Promise<string> {
+export async function signup(loginName: string, phoneNumber: string, email: string, password: string): Promise<string> {
     return createUserAndAuth(
         loginName, loginName, ROLE_CUST, "", phoneNumber, email, "",
         loginName, password, get_session_ttl(ROLE_CUST)
@@ -36,11 +36,14 @@ export async function login(loginName: string, password: string, userAgent: stri
         .then((loginSession: LoginSession) => {
             // console.log("loginSession = " + JSON.stringify(loginSession));
             var token = jwt.sign(
-                loginSession,
+                {
+                    ...loginSession,
+                    exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
+                },
                 process.env.RSA_PRIVATE_KEY || "",
                 {
                     algorithm: 'RS256',
-                    expiresIn: loginSession.ttl
+                    // expiresIn: loginSession.ttl
                 });
             return Promise.resolve(token);
         })
@@ -50,12 +53,18 @@ export async function login(loginName: string, password: string, userAgent: stri
         });
 }
 
+export type VerifyResult = {
+    loginSession: LoginSession;
+    newToken: string;
+};
+
 /**
  * Verify token
  * @param token 
+ * @param update : update token forcely
  * @returns LoginSession
  */
-export async function verify_token(token: string): Promise<LoginSession> {
+export async function verify_token(token: string, update: boolean): Promise<VerifyResult> {
     try {
         const decoded = jwt.verify(
             token,
@@ -66,11 +75,76 @@ export async function verify_token(token: string): Promise<LoginSession> {
         if (decoded == undefined) {
             return Promise.reject(FailToVerifyToken);
         } else {
-            return Promise.resolve(decoded as LoginSession);
+            const loginSession = decoded as LoginSession;
+            if (update) {
+                updateLoginSession(loginSession.id);
+                var newToken = jwt.sign(
+                    {
+                        ...loginSession,
+                        exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
+                    },
+                    process.env.RSA_PRIVATE_KEY || "",
+                    {
+                        algorithm: 'RS256',
+                        // expiresIn: loginSession.ttl
+                    });
+                return Promise.resolve({
+                    loginSession: loginSession,
+                    newToken: newToken
+                });
+            }else{
+                // check expire time if near (<10min)
+                const left_ttl = Math.floor(loginSession.exp - Date.now()/1000);
+                console.log(`${loginSession.user_id} remaining ttl : ${left_ttl} s`);
+                if (left_ttl < 10 * 60 ) {
+                    updateLoginSession(loginSession.id);
+                    var newToken = jwt.sign(
+                        {
+                            ...loginSession,
+                            exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
+                        },
+                        process.env.RSA_PRIVATE_KEY || "",
+                        {
+                            algorithm: 'RS256',
+                            // expiresIn: loginSession.ttl
+                        });
+                    return Promise.resolve({
+                        loginSession: loginSession,
+                        newToken: newToken
+                    });
+                }else{
+                    return Promise.resolve({
+                        loginSession: loginSession,
+                        newToken: ""
+                    });
+                }
+            }
         }
     } catch (error) {
-        console.error("occur error : "+error);
+        console.error("occur error : " + error);
         return Promise.reject(FailToVerifyToken);
     }
 }
 
+/**
+ * Logout
+ * @param token 
+ * @returns 
+ */
+export async function logout(token: string): Promise<void> {
+    try {
+        const decoded = jwt.verify(
+            token,
+            process.env.RSA_PUBLIC_KEY || "",
+            {
+                algorithms: ['RS256'],
+                ignoreExpiration: true,
+            }) as LoginSession;
+        const sessionId = decoded.id;
+        invalidateLoginSession(sessionId);
+        return Promise.resolve();
+    } catch (error) {
+        console.error("occur error : " + error);
+        return Promise.resolve();
+    }
+}

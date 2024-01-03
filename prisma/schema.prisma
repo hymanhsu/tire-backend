@@ -62,13 +62,14 @@ model u_auths {
 }
 
 model u_login_sessions {
-  id         String    @id @db.Char(21)
-  user_id    String?   @db.Char(21)
-  user_agent String?   @db.VarChar(256)
-  exp_at     DateTime  @db.Timestamp(6)
-  invalid    Boolean?  @default(false)
-  c_at       DateTime? @default(now()) @db.Timestamp(6)
-  u_at       DateTime? @default(now()) @db.Timestamp(6)
+  id          String    @id @db.Char(21)
+  user_id     String?   @db.Char(21)
+  user_agent  String?   @db.VarChar(256)
+  session_ttl Int?
+  renew_count Int?      @default(0)
+  invalid     Boolean?  @default(false)
+  c_at        DateTime? @default(now()) @db.Timestamp(6)
+  u_at        DateTime? @default(now()) @db.Timestamp(6)
 }
 
 model u_roles {
@@ -81,7 +82,7 @@ model u_roles {
 model u_users {
   id           String    @id @db.Char(21)
   user_name    String    @db.VarChar(100)
-  nick_name    String    @db.VarChar(100)
+  nick_name    String?   @db.VarChar(100)
   role_id      String?   @db.Char(4)
   address      String?   @db.VarChar(200)
   phone_number String?   @unique @db.VarChar(20)
