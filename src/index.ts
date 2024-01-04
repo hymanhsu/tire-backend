@@ -5,8 +5,9 @@ import responseTime from 'response-time';
 import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
-import {heloRouter} from '@App/api/helo/helo1';
-import {authRouter} from '@App/api/user/auth';
+import morganBody from 'morgan-body';
+import { heloRouter } from '@App/api/helo/helo1';
+import { authRouter } from '@App/api/user/auth';
 
 // load .env
 dotenv.config();
@@ -19,6 +20,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
+if (process.env.NODE_ENV != 'production') {
+    morganBody(app);
+}
 
 // setting routers
 app.use("/api/helo", heloRouter);

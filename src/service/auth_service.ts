@@ -95,7 +95,7 @@ export async function verify_token(token: string, update: boolean): Promise<Veri
             }else{
                 // check expire time if near (<10min)
                 const left_ttl = Math.floor(loginSession.exp - Date.now()/1000);
-                console.log(`${loginSession.user_id} remaining ttl : ${left_ttl} s`);
+                console.log(`user [${loginSession.user_id}] remain ttl : ${left_ttl} s`);
                 if (left_ttl < 10 * 60 ) {
                     updateLoginSession(loginSession.id);
                     var newToken = jwt.sign(
