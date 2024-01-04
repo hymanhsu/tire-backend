@@ -10,7 +10,11 @@ import { heloRouter } from '@App/api/helo/helo1';
 import { authRouter } from '@App/api/user/auth';
 
 // load .env
-dotenv.config();
+let envFile = '.env';
+if (process.env.NODE_ENV != undefined) {
+    envFile = `.env.${process.env.NODE_ENV}`;
+}
+dotenv.config({ path: envFile });
 
 const app: Express = express();
 

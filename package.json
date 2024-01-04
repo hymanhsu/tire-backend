@@ -7,10 +7,10 @@
     "pull_dbschema": "npx prisma db pull && npx prisma generate",
     "clean": "npx tsc --build --clean",
     "prebuild": "eslint -c .eslintrc.json ",
-    "test": "dotenv -e .env.test -- npx jest --silent false --verbose true --collectCoverage",
+    "test": "dotenv -e .env.dev -- npx jest --silent false --verbose true --collectCoverage",
     "build": "npx tsc -p tsconfig.build.json",
     "start": "node --import ./dist/register.js .",
-    "dev": "tsx watch src/index.ts"
+    "dev": "set NODE_ENV=dev && tsx watch src/index.ts"
   },
   "type": "module",
   "keywords": [],
