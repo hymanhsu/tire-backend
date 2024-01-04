@@ -18,6 +18,11 @@ export async function signup(loginName: string, phoneNumber: string, email: stri
     );
 }
 
+export type LoginResult = {
+    loginSession: LoginSession;
+    token: string;
+};
+
 /**
  * Login
  * @param loginName 
@@ -25,7 +30,7 @@ export async function signup(loginName: string, phoneNumber: string, email: stri
  * @param userAgent 
  * @returns  JWT token
  */
-export async function login(loginName: string, password: string, userAgent: string): Promise<string> {
+export async function login(loginName: string, password: string, userAgent: string): Promise<LoginResult> {
     // query user info by login name and password
     return findUserByLoginName(loginName, password)
         .then(async (userInfo: UserTtl) => {
@@ -35,7 +40,10 @@ export async function login(loginName: string, password: string, userAgent: stri
         .then((loginSession: LoginSession) => {
             // console.log("loginSession = " + JSON.stringify(loginSession));
             let token = generate_token(loginSession, loginSession.ttl);
-            return Promise.resolve(token);
+            return Promise.resolve({
+                loginSession: loginSession,
+                token: token
+            });
         })
         .catch((error: Error) => {
             console.log("error = " + error);

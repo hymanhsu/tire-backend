@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from "express"
-import { signup, login, check_token, logout } from "@App/service/auth_service"
+import { signup, login, check_token, logout, LoginResult } from "@App/service/auth_service"
 
 export const authRouter = express.Router();
 
@@ -40,11 +40,11 @@ authRouter.post("/login", async (req: Request, res: Response) => {
     const userAgent = req.get("user-agent") as string;
     const loginRequest = req.body as LoginRequest;
     login(loginRequest.loginName, loginRequest.password, userAgent)
-        .then((token) => {
+        .then((loginResult: LoginResult) => {
             res.json(
                 {
                     meta: { status: true, message: "ok" },
-                    data: { token: token }
+                    data: { token: loginResult.token, session: loginResult.loginSession }
                 }
             );
         })
