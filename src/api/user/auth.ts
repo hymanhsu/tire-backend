@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from "express"
-import { signup, login, verify_token, logout } from "@App/service/auth_service"
+import { signup, login, check_token, logout } from "@App/service/auth_service"
 
 export const authRouter = express.Router();
 
@@ -65,7 +65,7 @@ type CheckRequest = {
 
 authRouter.post("/check", async (req: Request, res: Response) => {
     const checkRequest = req.body as CheckRequest;
-    verify_token(checkRequest.token, checkRequest.update)
+    check_token(checkRequest.token, checkRequest.update)
         .then((verifyResult) => {
             res.json(
                 {

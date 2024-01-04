@@ -1,8 +1,7 @@
-import { LoginSession, UserInfo, createLoginSession, updateLoginSession, findUserByLoginName, createUserAndAuth, invalidateLoginSession } from "@App/dao/user_dao"
+import { UserInfo, createLoginSession, updateLoginSession, findUserByLoginName, createUserAndAuth, invalidateLoginSession, UserTtl } from "@App/dao/user_dao"
 import { CError, FailToVerifyToken } from "@App/util/errcode"
 import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
-import jwt from "jsonwebtoken"
-
+import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
 
 /**
  * Signup
@@ -29,22 +28,13 @@ export async function signup(loginName: string, phoneNumber: string, email: stri
 export async function login(loginName: string, password: string, userAgent: string): Promise<string> {
     // query user info by login name and password
     return findUserByLoginName(loginName, password)
-        .then(async (userInfo: UserInfo) => {
+        .then(async (userInfo: UserTtl) => {
             // console.log("userInfo = " + JSON.stringify(userInfo));
             return createLoginSession(userInfo.id, userInfo.role_id, userAgent, userInfo.session_ttl);
         })
         .then((loginSession: LoginSession) => {
             // console.log("loginSession = " + JSON.stringify(loginSession));
-            var token = jwt.sign(
-                {
-                    ...loginSession,
-                    exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
-                },
-                process.env.RSA_PRIVATE_KEY || "",
-                {
-                    algorithm: 'RS256',
-                    // expiresIn: loginSession.ttl
-                });
+            let token = generate_token(loginSession, loginSession.ttl);
             return Promise.resolve(token);
         })
         .catch((error: Error) => {
@@ -64,55 +54,32 @@ export type VerifyResult = {
  * @param update : update token forcely
  * @returns LoginSession
  */
-export async function verify_token(token: string, update: boolean): Promise<VerifyResult> {
+export async function check_token(token: string, update: boolean): Promise<VerifyResult> {
     try {
-        const decoded = jwt.verify(
-            token,
-            process.env.RSA_PUBLIC_KEY || "",
-            {
-                algorithms: ['RS256'],
-            });
-        if (decoded == undefined) {
+        const decoded = verify_token(token);
+        if (decoded == null) {
             return Promise.reject(FailToVerifyToken);
         } else {
             const loginSession = decoded as LoginSession;
             if (update) {
                 updateLoginSession(loginSession.id);
-                var newToken = jwt.sign(
-                    {
-                        ...loginSession,
-                        exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
-                    },
-                    process.env.RSA_PRIVATE_KEY || "",
-                    {
-                        algorithm: 'RS256',
-                        // expiresIn: loginSession.ttl
-                    });
+                let newToken = generate_token(loginSession, loginSession.ttl);
                 return Promise.resolve({
                     loginSession: loginSession,
                     newToken: newToken
                 });
-            }else{
+            } else {
                 // check expire time if near (<10min)
-                const left_ttl = Math.floor(loginSession.exp - Date.now()/1000);
+                const left_ttl = Math.floor(loginSession.exp - Date.now() / 1000);
                 console.log(`user [${loginSession.user_id}] remain ttl : ${left_ttl} s`);
-                if (left_ttl < 10 * 60 ) {
+                if (left_ttl < 10 * 60) {
                     updateLoginSession(loginSession.id);
-                    var newToken = jwt.sign(
-                        {
-                            ...loginSession,
-                            exp: Math.floor(Date.now() / 1000) + loginSession.ttl,
-                        },
-                        process.env.RSA_PRIVATE_KEY || "",
-                        {
-                            algorithm: 'RS256',
-                            // expiresIn: loginSession.ttl
-                        });
+                    let newToken = generate_token(loginSession, loginSession.ttl);
                     return Promise.resolve({
                         loginSession: loginSession,
                         newToken: newToken
                     });
-                }else{
+                } else {
                     return Promise.resolve({
                         loginSession: loginSession,
                         newToken: ""
@@ -133,14 +100,11 @@ export async function verify_token(token: string, update: boolean): Promise<Veri
  */
 export async function logout(token: string): Promise<void> {
     try {
-        const decoded = jwt.verify(
-            token,
-            process.env.RSA_PUBLIC_KEY || "",
-            {
-                algorithms: ['RS256'],
-                ignoreExpiration: true,
-            }) as LoginSession;
-        const sessionId = decoded.id;
+        const decoded = verify_token(token, true);
+        if (decoded == null) {
+            return Promise.resolve();
+        }
+        const sessionId = (decoded as LoginSession).id;
         invalidateLoginSession(sessionId);
         return Promise.resolve();
     } catch (error) {

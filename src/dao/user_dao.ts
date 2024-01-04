@@ -3,22 +3,15 @@
  */
 import { prisma } from '@App/util/dbwrapper'
 import { md5_string } from "@App/util/encrypt"
-import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord } from '@App/util/errcode'
+import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord, NotFoundUserRecord } from '@App/util/errcode'
 import { generate_id } from '@App/util/genid';
+import { LoginSession } from '@App/util/jwtoken';
+import { u_users } from '@prisma/client';
 
 
-export type UserInfo = {
+export type UserTtl = {
     id: string;
-    user_name: string;
-    nick_name: string;
     role_id: string;
-    address: string;
-    phone_number: string;
-    email: string;
-    photo_url: string;
-    invalid: boolean;
-    c_at: Date;
-    u_at: Date;
     session_ttl: number;
 };
 
@@ -28,11 +21,11 @@ export type UserInfo = {
  * @param password 
  * @returns 
  */
-export async function findUserByLoginName(loginName: string, password: string): Promise<UserInfo> {
+export async function findUserByLoginName(loginName: string, password: string): Promise<UserTtl> {
     const encodedPassword = md5_string(password);
-    try{
-        const userInfos: UserInfo[] = await prisma.$queryRawUnsafe(
-            'SELECT u.*, a.session_ttl  FROM u_users u, u_auths a ' +
+    try {
+        const userInfos: UserTtl[] = await prisma.$queryRawUnsafe(
+            'SELECT u.id, u.role_id, a.session_ttl  FROM u_users u, u_auths a ' +
             'WHERE u.id = a.user_id AND u.invalid = FALSE AND a.invalid = FALSE ' +
             'AND a.auth_pass = $1 AND (u.phone_number = $2 OR u.email = $3 OR a.login_name = $4)',
             encodedPassword,
@@ -45,20 +38,11 @@ export async function findUserByLoginName(loginName: string, password: string): 
                 resolve(userInfos[0]);
             }
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return Promise.reject(NotFoundAuthenRecord);
     }
 }
-
-export type LoginSession = {
-    id: string;
-    user_id: string;
-    role_id: string;
-    user_agent: string;
-    ttl: number;
-    exp: number;
-};
 
 /**
  * Create login session 
@@ -97,7 +81,7 @@ export async function createLoginSession(userId: string, roleId: string, userAge
  * @param sessionId 
  * @returns 
  */
-export async function updateLoginSession(sessionId:string): Promise<void> {
+export async function updateLoginSession(sessionId: string): Promise<void> {
     try {
         const result: number = await prisma.$executeRaw`UPDATE u_login_sessions SET renew_count=renew_count+1 WHERE id=${sessionId}`;
         return Promise.resolve();
@@ -112,17 +96,17 @@ export async function updateLoginSession(sessionId:string): Promise<void> {
  * @param sessionId 
  * @returns 
  */
-export async function invalidateLoginSession(sessionId:string): Promise<void> {
-    try{
+export async function invalidateLoginSession(sessionId: string): Promise<void> {
+    try {
         await prisma.u_login_sessions.update({
-            where:{
+            where: {
                 id: sessionId,
             },
             data: {
                 invalid: true,
             }
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return Promise.reject(FailToInvalidateLoginSession);
     }
@@ -144,7 +128,7 @@ export async function invalidateLoginSession(sessionId:string): Promise<void> {
 export async function createUserAndAuth(userName: string, nickName: string, roleId: string,
     address: string, phoneNumber: string, email: string, photoUrl: string,
     loginName: string, password: string, sessionTtl: number): Promise<string> {
-    try{
+    try {
         return await prisma.$transaction(async (tx): Promise<string> => {
             // create user record
             const user = await tx.u_users.create({
@@ -174,9 +158,48 @@ export async function createUserAndAuth(userName: string, nickName: string, role
             });
             return Promise.resolve(auth.user_id as string);
         });
-    }catch(error){
+    } catch (error) {
         console.error(error);
         return Promise.reject(FailToCreateUser);
+    }
+}
+
+export type UserInfo = {
+    id: string;
+    user_name: string;
+    nick_name: string | null;
+    role_id: string | null;
+    address: string | null;
+    phone_number: string | null;
+    email: string | null;
+    photo_url: string | null;
+    invalid: boolean | null;
+    c_at: Date | null;
+    u_at: Date | null;
+};
+
+/**
+ * Find user infomation
+ * @param userId 
+ * @returns 
+ */
+export async function findUserById(userId: string): Promise<UserInfo> {
+    try {
+        const userInfo: UserInfo | null = await prisma.u_users.findUnique({
+            where: {
+                id: userId
+            }
+        });
+        return new Promise((resolve, reject) => {
+            if (userInfo === null) {
+                reject(NotFoundUserRecord);
+            } else {
+                resolve(userInfo);
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundUserRecord);
     }
 }
 

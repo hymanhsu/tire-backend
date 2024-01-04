@@ -1,10 +1,10 @@
 export class CError extends Error {
     public code: number;
-	constructor(code : number, name : string, message : string) {
-		super(message);
+    constructor(code: number, name: string, message: string) {
+        super(message);
         this.name = name;
         this.code = code;
-	}
+    }
 }
 
 /**
@@ -20,9 +20,11 @@ export class CError extends Error {
  * 21xxxx  =  errors related to network
  */
 
-export const NotFoundAuthenRecord = new CError(100001, 'NotFoundAuthenRecord','Not found the record of authentication!');
-export const FailToVerifyToken = new CError(100002, 'FailToVerifyToken','Fail to verify token!');
-export const FailToCreateLoginSessionRecord = new CError(100003, 'FailToCreateLoginSessionRecord','Fail to create login session db record!');
-export const FailToCreateUser = new CError(100004, 'FailToCreateUser','Fail to create user!');
-export const FailToInvalidateLoginSession = new CError(100005, 'FailToInvalidateLoginSession','Fail to invalidate login session!');
+export const NotFoundAuthenRecord = new CError(100001, 'NotFoundAuthenRecord', 'Not found the record of authentication!');
+export const NotFoundUserRecord = new CError(100002, 'NotFoundUserRecord', 'Not found the record of user!');
+
+export const FailToVerifyToken = new CError(100010, 'FailToVerifyToken', 'Fail to verify token!');
+export const FailToCreateLoginSessionRecord = new CError(100011, 'FailToCreateLoginSessionRecord', 'Fail to create login session db record!');
+export const FailToCreateUser = new CError(100012, 'FailToCreateUser', 'Fail to create user!');
+export const FailToInvalidateLoginSession = new CError(100013, 'FailToInvalidateLoginSession', 'Fail to invalidate login session!');
 

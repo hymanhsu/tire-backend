@@ -8,6 +8,7 @@ import helmet from 'helmet';
 import morganBody from 'morgan-body';
 import { heloRouter } from '@App/api/helo/helo1';
 import { authRouter } from '@App/api/user/auth';
+import { userRouter } from '@App/api/user/user';
 
 // load .env
 let envFile = '.env';
@@ -31,7 +32,7 @@ if (process.env.NODE_ENV != 'production') {
 // setting routers
 app.use("/api/helo", heloRouter);
 app.use("/api/auth", authRouter);
-
+app.use("/api/user", userRouter);
 
 const port = process.env.PORT || 3000;
 
