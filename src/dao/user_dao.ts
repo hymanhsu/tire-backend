@@ -83,7 +83,7 @@ export async function createLoginSession(userId: string, roleId: string, userAge
  */
 export async function updateLoginSession(sessionId: string): Promise<void> {
     try {
-        const result: number = await prisma.$executeRaw`UPDATE u_login_sessions SET renew_count=renew_count+1 WHERE id=${sessionId}`;
+        const result: number = await prisma.$executeRaw`UPDATE u_login_sessions SET renew_count=renew_count+1, u_at=now() WHERE id=${sessionId}`;
         return Promise.resolve();
     } catch (error) {
         console.error(error);
@@ -104,6 +104,7 @@ export async function invalidateLoginSession(sessionId: string): Promise<void> {
             },
             data: {
                 invalid: true,
+                u_at: new Date(),
             }
         });
     } catch (error) {

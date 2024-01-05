@@ -11,11 +11,7 @@ INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 28800);
 INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 86400);
 
 -- users
-INSERT INTO u_users (id, user_name, role_id, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'ROOT', '6661236789', 'root666@gmail.com');
-INSERT INTO u_users (id, user_name, role_id) VALUES('odTKh0e9eCCSAt63J5rec', 'admin01', 'ADMN');
-INSERT INTO u_users (id, user_name, role_id) VALUES('joZb8dPA9YmgQBBy7rNfH', 'manager01', 'MANR');
-INSERT INTO u_users (id, user_name, role_id) VALUES('kRglaJo7vCIM6ALrHm8Jf', 'staff01', 'STAF');
-INSERT INTO u_users (id, user_name, role_id) VALUES('EuoPIozzbRNQGsdoFUtxM', 'customer01', 'CUST');
+INSERT INTO u_users (id, user_name, nick_name, role_id, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'root', 'ROOT', '6661236789', 'root666@gmail.com');
 
 -- auths
 INSERT INTO u_auths (id, user_id, login_name, auth_pass, session_ttl) VALUES('vZQf6t4wct14PZYZbLfNH', 'AWPo68O4So3oederv9jiJ', 'root', 'fc5e038d38a57032085441e7fe7010b0', 1);

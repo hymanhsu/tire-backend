@@ -87,9 +87,18 @@ authRouter.post("/check", async (req: Request, res: Response) => {
         });
 });
 
-authRouter.post("/logout", async (req: Request, res: Response) => {
-    const checkRequest = req.body as CheckRequest;
-    logout(checkRequest.token)
+authRouter.get("/logout", async (req: Request, res: Response) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (token == undefined) {
+        res.json(
+            {
+                meta: { status: true, message: "ok" },
+                data: {}
+            }
+        );
+        return;
+    }
+    logout(token)
         .then((loginSession) => {
             res.json(
                 {
