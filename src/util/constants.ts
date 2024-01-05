@@ -8,6 +8,8 @@ export const ROLE_MANR = "MANR";
 export const ROLE_STAF = "STAF";
 export const ROLE_CUST = "CUST";
 
+export const ROLES_WITH_AMDIN = [ROLE_ROOT,ROLE_ADMN];
+
 /**
  * Return ttl, unit is hour
  * @param roleId 
@@ -39,4 +41,13 @@ export interface BaseResponse {
     data: any,
 };
 
+/**
+ * Judge if allow based on role
+ * @param role 
+ * @param allows 
+ * @returns 
+ */
+export const allowByRole = (role:string, allows:string[]):boolean => {
+    return allows.includes(role);
+}
 

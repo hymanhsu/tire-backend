@@ -4,7 +4,7 @@ import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
 import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
 
 /**
- * Signup
+ * Signup (as customer)
  * @param userName 
  * @param phoneNumber 
  * @param email 
@@ -12,10 +12,19 @@ import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
  * @param password 
  */
 export async function signup(loginName: string, phoneNumber: string, email: string, password: string): Promise<string> {
-    return createUserAndAuth(
-        loginName, loginName, ROLE_CUST, "", phoneNumber, email, "",
-        loginName, password, get_session_ttl(ROLE_CUST)
-    );
+    const userWithAuth = {
+        userName: loginName,
+        nickName: loginName,
+        roleId: ROLE_CUST,
+        address: "",
+        phoneNumber: phoneNumber,
+        email: email,
+        photoUrl: "",
+        loginName: loginName,
+        password: password,
+        sessionTtl: get_session_ttl(ROLE_CUST),
+    };    
+    return createUserAndAuth(userWithAuth);
 }
 
 export type LoginResult = {

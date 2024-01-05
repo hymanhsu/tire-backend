@@ -6,7 +6,7 @@ import { md5_string } from "@App/util/encrypt"
 import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord, NotFoundUserRecord } from '@App/util/errcode'
 import { generate_id } from '@App/util/genid';
 import { LoginSession } from '@App/util/jwtoken';
-import { u_users } from '@prisma/client';
+// import { u_users } from '@prisma/client';
 
 
 export type UserTtl = {
@@ -113,48 +113,51 @@ export async function invalidateLoginSession(sessionId: string): Promise<void> {
     }
 }
 
+export type UserWithAuth = {
+    userName: string;
+    nickName: string;
+    roleId: string;
+    address: string;
+    phoneNumber: string;
+    email: string;
+    photoUrl: string;
+    loginName: string;
+    password: string;
+    sessionTtl: number;
+};
+
 /**
  * Create user & auth records in a transaction
- * @param userName 
- * @param nickName 
- * @param roleId 
- * @param address 
- * @param phoneNumber 
- * @param email 
- * @param photoUrl 
- * @param loginName 
- * @param password 
- * @param sessionTtl 
+ * @param userWithAuth 
+ * @returns 
  */
-export async function createUserAndAuth(userName: string, nickName: string, roleId: string,
-    address: string, phoneNumber: string, email: string, photoUrl: string,
-    loginName: string, password: string, sessionTtl: number): Promise<string> {
+export async function createUserAndAuth(userWithAuth:UserWithAuth): Promise<string> {
     try {
         return await prisma.$transaction(async (tx): Promise<string> => {
             // create user record
             const user = await tx.u_users.create({
                 data: {
                     id: generate_id(),
-                    user_name: userName,
-                    nick_name: nickName,
-                    role_id: roleId,
-                    address: address,
-                    phone_number: phoneNumber,
-                    email: email,
-                    photo_url: photoUrl,
+                    user_name: userWithAuth.userName,
+                    nick_name: userWithAuth.nickName,
+                    role_id: userWithAuth.roleId,
+                    address: userWithAuth.address,
+                    phone_number: userWithAuth.phoneNumber,
+                    email: userWithAuth.email,
+                    photo_url: userWithAuth.photoUrl,
                 }
             });
             if (user == undefined || user == null) {
-                throw new Error(`create user failed : ${userName}`);
+                throw new Error(`create user failed : ${userWithAuth.userName}`);
             }
             // create user auth record
             const auth = await tx.u_auths.create({
                 data: {
                     id: generate_id(),
                     user_id: user.id,
-                    login_name: loginName,
-                    auth_pass: md5_string(password),
-                    session_ttl: sessionTtl,
+                    login_name: userWithAuth.loginName,
+                    auth_pass: md5_string(userWithAuth.password),
+                    session_ttl: userWithAuth.sessionTtl,
                 }
             });
             return Promise.resolve(auth.user_id as string);
@@ -204,3 +207,26 @@ export async function findUserById(userId: string): Promise<UserInfo> {
     }
 }
 
+
+/**
+ * Find user list by role
+ */
+export async function findUsersByRole(role: string): Promise<UserInfo[]> {
+    try {
+        const userInfos: UserInfo[] = await prisma.u_users.findMany({
+            where: {
+                role_id: role
+            }
+        });
+        return new Promise((resolve, reject) => {
+            if (userInfos == null || userInfos == undefined) {
+                reject(NotFoundUserRecord);
+            } else {
+                resolve(userInfos);
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundUserRecord);
+    }
+}

@@ -51,26 +51,39 @@ export function verify_token(token: string, ignoreExpiration: boolean = false): 
         }
         return decoded as LoginSession;
     } catch (error) {
+        console.log(token);
+        console.log(error);
         return null;
     }
 }
 
+/**
+ * Extend the type 'Request' in the Express
+ */
 declare module "express-serve-static-core" {
     interface Request {
         loginSession: LoginSession | undefined;
     }
 }
 
+/**
+ * Check the token and add the login session into request if need
+ * @param req 
+ * @param res 
+ * @param next 
+ */
 export async function checkAuthToken(req: Request, res: Response, next: NextFunction) {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
+        // console.log("------- NOT FOUND TOKEN -------");
         req.loginSession = undefined;
     } else {
         let decoded = verify_token(token);
         if (decoded != null) {
-            console.log("------- SETTING loginSession -------");
+            // console.log("------- SETTING loginSession -------");
             req.loginSession = decoded as LoginSession;
         } else {
+            // console.log("------- INVALID TOKEN -------");
             req.loginSession = undefined;
         }
     }

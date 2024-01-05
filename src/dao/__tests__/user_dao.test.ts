@@ -35,12 +35,19 @@ describe('auth module', () => {
     });
 
     test('createUserAndAuth success', async () => {
-        const userName = "staff-0001";
-        const password = "p0001";
-        await expect(createUserAndAuth(
-            userName, userName, "STAF", "W32 Ave.", "5551234567", "5555@gmai.com",
-            "", userName, password, 8,
-        ))
+        const userWithAuth = {
+            userName: "staff-0001",
+            nickName: "staff-0001",
+            roleId: "STAF",
+            address: "W32 Ave.",
+            phoneNumber: "5551234567",
+            email: "5555@gmai.com",
+            photoUrl: "",
+            loginName: "staff-0001",
+            password: "p0001",
+            sessionTtl: 60*60,
+        };
+        await expect(createUserAndAuth(userWithAuth))
             .rejects.toEqual(FailToCreateUser);
         // .resolves.toHaveLength(21);
     });

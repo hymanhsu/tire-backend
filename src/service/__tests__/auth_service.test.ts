@@ -19,7 +19,7 @@ describe('auth module', () => {
         const loginName = "root";
         const password = "helloworld";
         const userAgent = "hi";
-        const token = await login(loginName, password, userAgent);
+        const token = (await login(loginName, password, userAgent)).token;
         // log("token = "+token);
         expect(token).toMatch(/.+\..+\..+/);
         const verifyResult = await check_token(token, false);
