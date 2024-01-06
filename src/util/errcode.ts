@@ -28,3 +28,7 @@ export const FailToCreateLoginSessionRecord = new CError(100011, 'FailToCreateLo
 export const FailToCreateUser = new CError(100012, 'FailToCreateUser', 'Fail to create user!');
 export const FailToInvalidateLoginSession = new CError(100013, 'FailToInvalidateLoginSession', 'Fail to invalidate login session!');
 
+export const FailToCreateMerchant = new CError(101001, 'FailToCreateMerchant', 'Fail to create merchant record!');
+export const NotFoundMerchant = new CError(101002, 'NotFoundMerchant', 'Not found the record of merchant!');
+
+

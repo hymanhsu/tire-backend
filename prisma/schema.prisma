@@ -8,10 +8,11 @@ datasource db {
 }
 
 model merchant_workshops {
-  id            String    @id @db.Char(14)
+  id            String    @id @db.Char(21)
+  merchant_id   String?   @db.Char(21)
+  workshop_sn   String?   @db.VarChar(100)
   workshop_name String?   @db.VarChar(100)
   introduction  String?   @default("") @db.VarChar(200)
-  merchant_id   String?   @db.Char(10)
   address       String?   @default("") @db.VarChar(200)
   phone_number  String?   @default("") @db.VarChar(20)
   latitude      Decimal?  @db.Decimal(10, 6)
@@ -65,7 +66,11 @@ model u_users {
 }
 
 model merchants {
-  id            String    @id @db.Char(10)
+  id            String    @id @db.Char(21)
+  nation        String?   @db.VarChar(100)
+  province      String?   @db.VarChar(100)
+  city          String?   @db.VarChar(100)
+  merchant_sn   String?   @db.VarChar(100)
   merchant_name String?   @db.VarChar(100)
   introduction  String?   @db.VarChar(500)
   website_url   String?   @db.VarChar(200)
