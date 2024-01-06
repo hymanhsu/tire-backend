@@ -131,10 +131,10 @@ CREATE TABLE merchant_workshops (
     -- address, including street, zip code and geographical coordinates etc
     phone_number VARCHAR(20) DEFAULT '',
     -- phone number
-    latitude NUMERIC(10, 6),
-    -- latitude (for google map)
-    longitude NUMERIC(10, 6),
-    -- longtitude (for google map)
+    latitude VARCHAR(50),
+    -- latitude (for google map) , using string to meet different precision
+    longitude VARCHAR(50),
+    -- longtitude (for google map), using string to meet different precision
     invalid BOOLEAN default FALSE,
     -- invalid = true, means data is invalid
     c_at TIMESTAMPTZ DEFAULT now(),
