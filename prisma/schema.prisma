@@ -7,22 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model manager_staffs {
-  id      String    @id @db.Char(21)
-  manager String?   @db.Char(21)
-  staff   String?   @db.Char(21)
-  c_at    DateTime? @default(now()) @db.Timestamptz(6)
-  u_at    DateTime? @default(now()) @db.Timestamptz(6)
-
-  @@unique([manager, staff], map: "unique_manager_staffs")
-}
-
 model merchant_workshops {
   id            String    @id @db.Char(14)
   workshop_name String?   @db.VarChar(100)
   introduction  String?   @default("") @db.VarChar(200)
   merchant_id   String?   @db.Char(10)
-  manager       String?   @db.Char(21)
   address       String?   @default("") @db.VarChar(200)
   phone_number  String?   @default("") @db.VarChar(20)
   latitude      Decimal?  @db.Decimal(10, 6)
@@ -80,10 +69,20 @@ model merchants {
   merchant_name String?   @db.VarChar(100)
   introduction  String?   @db.VarChar(500)
   website_url   String?   @db.VarChar(200)
-  owner         String?   @db.Char(21)
   address       String?   @db.VarChar(200)
   phone_number  String?   @db.VarChar(20)
   invalid       Boolean?  @default(false)
   c_at          DateTime? @default(now()) @db.Timestamptz(6)
   u_at          DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model merchant_members {
+  id          String    @id @db.Char(21)
+  merchant_id String    @db.Char(21)
+  workshop_id String?   @db.Char(21)
+  member_id   String    @db.Char(21)
+  c_at        DateTime? @default(now()) @db.Timestamptz(6)
+  u_at        DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@unique([merchant_id, member_id])
 }
