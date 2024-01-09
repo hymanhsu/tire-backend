@@ -51,3 +51,7 @@ export const allowByRole = (role:string, allows:string[]):boolean => {
     return allows.includes(role);
 }
 
+
+export type NormalCreateDeleteRequest = {
+    id: string
+};

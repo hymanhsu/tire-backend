@@ -4,15 +4,15 @@ import { signup, login, check_token, logout, LoginResult } from "@App/service/au
 export const authRouter = express.Router();
 
 type SignupRequest = {
-    loginName: string;
-    phoneNumber: string;
+    login_name: string;
+    phone_number: string;
     email: string;
     password: string;
 };
 
 authRouter.post("/signup", async (req: Request, res: Response) => {
     const signupRequest = req.body as SignupRequest;
-    signup(signupRequest.loginName, signupRequest.phoneNumber, signupRequest.email, signupRequest.password)
+    signup(signupRequest.login_name, signupRequest.phone_number, signupRequest.email, signupRequest.password)
         .then((userId) => {
             res.json(
                 {
@@ -32,14 +32,14 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 });
 
 type LoginRequest = {
-    loginName: string;
+    login_name: string;
     password: string;
 };
 
 authRouter.post("/login", async (req: Request, res: Response) => {
     const userAgent = req.get("user-agent") as string;
     const loginRequest = req.body as LoginRequest;
-    login(loginRequest.loginName, loginRequest.password, userAgent)
+    login(loginRequest.login_name, loginRequest.password, userAgent)
         .then((loginResult: LoginResult) => {
             res.json(
                 {

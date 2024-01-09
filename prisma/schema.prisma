@@ -82,12 +82,11 @@ model merchants {
 }
 
 model merchant_members {
-  id          String    @id @db.Char(21)
   merchant_id String    @db.Char(21)
-  workshop_id String?   @db.Char(21)
   member_id   String    @db.Char(21)
+  workshop_id String?   @db.Char(21)
   c_at        DateTime? @default(now()) @db.Timestamptz(6)
   u_at        DateTime? @default(now()) @db.Timestamptz(6)
 
-  @@unique([merchant_id, member_id])
+  @@id([merchant_id, member_id])
 }

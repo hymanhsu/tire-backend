@@ -85,7 +85,7 @@ type CreateUserRequest = {
     password:string
 };
 
-userRouter.post("/createAdministrator", checkAuthToken, async (req: Request, res: Response) => {
+userRouter.post("/addAdministrator", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -116,7 +116,7 @@ userRouter.post("/createAdministrator", checkAuthToken, async (req: Request, res
         });
 });
 
-userRouter.post("/createMerchantOwner", checkAuthToken, async (req: Request, res: Response) => {
+userRouter.post("/addeMerchantOwner", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -147,7 +147,7 @@ userRouter.post("/createMerchantOwner", checkAuthToken, async (req: Request, res
         });
 });
 
-userRouter.post("/createWorkshopManager", checkAuthToken, async (req: Request, res: Response) => {
+userRouter.post("/addWorkshopManager", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -178,7 +178,7 @@ userRouter.post("/createWorkshopManager", checkAuthToken, async (req: Request, r
         });
 });
 
-userRouter.post("/createWorkshopStaff", checkAuthToken, async (req: Request, res: Response) => {
+userRouter.post("/addWorkshopStaff", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {

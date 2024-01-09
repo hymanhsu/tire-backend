@@ -9,6 +9,7 @@ import morganBody from 'morgan-body';
 import { heloRouter } from '@App/api/helo/helo1';
 import { authRouter } from '@App/api/user/auth';
 import { userRouter } from '@App/api/user/user';
+import { merchantRouter } from '@App/api/user/merchant';
 
 // load .env
 let envFile = '.env';
@@ -33,6 +34,7 @@ if (process.env.NODE_ENV != 'production') {
 app.use("/api/helo", heloRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/merchant", merchantRouter);
 
 const port = process.env.PORT || 3000;
 

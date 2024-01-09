@@ -1,4 +1,4 @@
-import { UserInfo, createLoginSession, updateLoginSession, findUserByLoginName, createUserAndAuth, invalidateLoginSession, UserTtl } from "@App/dao/user_dao"
+import { UserInfo, add_loginSession, update_loginSession, find_user_by_loginName, add_user_and_auth, invalidate_loginSession, UserTtl } from "@App/dao/user_dao"
 import { CError, FailToVerifyToken } from "@App/util/errcode"
 import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
 import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
@@ -13,18 +13,18 @@ import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
  */
 export async function signup(loginName: string, phoneNumber: string, email: string, password: string): Promise<string> {
     const userWithAuth = {
-        userName: loginName,
-        nickName: loginName,
-        roleId: ROLE_CUST,
+        user_name: loginName,
+        nick_name: loginName,
+        role: ROLE_CUST,
         address: "",
-        phoneNumber: phoneNumber,
+        phone_number: phoneNumber,
         email: email,
-        photoUrl: "",
-        loginName: loginName,
+        photo_url: "",
+        login_name: loginName,
         password: password,
-        sessionTtl: get_session_ttl(ROLE_CUST),
+        session_ttl: get_session_ttl(ROLE_CUST),
     };    
-    return createUserAndAuth(userWithAuth);
+    return add_user_and_auth(userWithAuth);
 }
 
 export type LoginResult = {
@@ -41,10 +41,10 @@ export type LoginResult = {
  */
 export async function login(loginName: string, password: string, userAgent: string): Promise<LoginResult> {
     // query user info by login name and password
-    return findUserByLoginName(loginName, password)
+    return find_user_by_loginName(loginName, password)
         .then(async (userInfo: UserTtl) => {
             // console.log("userInfo = " + JSON.stringify(userInfo));
-            return createLoginSession(userInfo.id, userInfo.role_id, userAgent, userInfo.session_ttl);
+            return add_loginSession(userInfo.id, userInfo.role_id, userAgent, userInfo.session_ttl);
         })
         .then((loginSession: LoginSession) => {
             // console.log("loginSession = " + JSON.stringify(loginSession));
@@ -79,7 +79,7 @@ export async function check_token(token: string, update: boolean): Promise<Verif
         } else {
             const loginSession = decoded as LoginSession;
             if (update) {
-                updateLoginSession(loginSession.id);
+                update_loginSession(loginSession.id);
                 let newToken = generate_token(loginSession, loginSession.ttl);
                 return Promise.resolve({
                     loginSession: loginSession,
@@ -90,7 +90,7 @@ export async function check_token(token: string, update: boolean): Promise<Verif
                 const left_ttl = Math.floor(loginSession.exp - Date.now() / 1000);
                 console.log(`user [${loginSession.user_id}] remain ttl : ${left_ttl} s`);
                 if (left_ttl < 10 * 60) {
-                    updateLoginSession(loginSession.id);
+                    update_loginSession(loginSession.id);
                     let newToken = generate_token(loginSession, loginSession.ttl);
                     return Promise.resolve({
                         loginSession: loginSession,
@@ -122,7 +122,7 @@ export async function logout(token: string): Promise<void> {
             return Promise.resolve();
         }
         const sessionId = (decoded as LoginSession).id;
-        invalidateLoginSession(sessionId);
+        invalidate_loginSession(sessionId);
         return Promise.resolve();
     } catch (error) {
         console.error("occur error : " + error);

@@ -1,4 +1,4 @@
-import { UserInfo, UserWithAuth, findUserById, createUserAndAuth, findUsersByRole } from "@App/dao/user_dao"
+import { UserInfo, UserWithAuth, find_user_by_id, add_user_and_auth, find_users_by_role } from "@App/dao/user_dao"
 import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF, get_session_ttl } from "@App/util/constants";
 
 /**
@@ -8,7 +8,7 @@ import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF, get_session_ttl } from "@Ap
  */
 export async function query_userinfo(userId: string): Promise<UserInfo> {
     try {
-        const userInfo = findUserById(userId);
+        const userInfo = find_user_by_id(userId);
         return Promise.resolve(userInfo);
     } catch (error) {
         console.error("occur error : " + error);
@@ -29,18 +29,18 @@ export async function query_userinfo(userId: string): Promise<UserInfo> {
 export async function create_administrator(userName:string, nickName:string, phoneNumber:string, 
     email:string, loginName:string, password:string): Promise<string> {
     const userWithAuth = {
-        userName: userName,
-        nickName: nickName,
-        roleId: ROLE_ADMN,
+        user_name: userName,
+        nick_name: nickName,
+        role: ROLE_ADMN,
         address: "",
-        phoneNumber: phoneNumber,
+        phone_number: phoneNumber,
         email: email,
-        photoUrl: "",
-        loginName: loginName,
+        photo_url: "",
+        login_name: loginName,
         password: password,
-        sessionTtl: get_session_ttl(ROLE_ADMN),
+        session_ttl: get_session_ttl(ROLE_ADMN),
     };    
-    return createUserAndAuth(userWithAuth);
+    return add_user_and_auth(userWithAuth);
 }
 
 /**
@@ -56,18 +56,18 @@ export async function create_administrator(userName:string, nickName:string, pho
 export async function create_merchant_owner(userName:string, nickName:string, phoneNumber:string, 
     email:string, loginName:string, password:string): Promise<string> {
     const userWithAuth = {
-        userName: userName,
-        nickName: nickName,
-        roleId: ROLE_MERT,
+        user_name: userName,
+        nick_name: nickName,
+        role: ROLE_MERT,
         address: "",
-        phoneNumber: phoneNumber,
+        phone_number: phoneNumber,
         email: email,
-        photoUrl: "",
-        loginName: loginName,
+        photo_url: "",
+        login_name: loginName,
         password: password,
-        sessionTtl: get_session_ttl(ROLE_MERT),
+        session_ttl: get_session_ttl(ROLE_MERT),
     };    
-    return createUserAndAuth(userWithAuth);
+    return add_user_and_auth(userWithAuth);
 }
 
 /**
@@ -83,18 +83,18 @@ export async function create_merchant_owner(userName:string, nickName:string, ph
 export async function create_workshop_manager(userName:string, nickName:string, phoneNumber:string, 
     email:string, loginName:string, password:string): Promise<string> {
     const userWithAuth = {
-        userName: userName,
-        nickName: nickName,
-        roleId: ROLE_MANR,
+        user_name: userName,
+        nick_name: nickName,
+        role: ROLE_MANR,
         address: "",
-        phoneNumber: phoneNumber,
+        phone_number: phoneNumber,
         email: email,
-        photoUrl: "",
-        loginName: loginName,
+        photo_url: "",
+        login_name: loginName,
         password: password,
-        sessionTtl: get_session_ttl(ROLE_MANR),
+        session_ttl: get_session_ttl(ROLE_MANR),
     };    
-    return createUserAndAuth(userWithAuth);
+    return add_user_and_auth(userWithAuth);
 }
 
 /**
@@ -110,18 +110,18 @@ export async function create_workshop_manager(userName:string, nickName:string, 
 export async function create_workshop_staff(userName:string, nickName:string, phoneNumber:string, 
     email:string, loginName:string, password:string): Promise<string> {
     const userWithAuth = {
-        userName: userName,
-        nickName: nickName,
-        roleId: ROLE_STAF,
+        user_name: userName,
+        nick_name: nickName,
+        role: ROLE_STAF,
         address: "",
-        phoneNumber: phoneNumber,
+        phone_number: phoneNumber,
         email: email,
-        photoUrl: "",
-        loginName: loginName,
+        photo_url: "",
+        login_name: loginName,
         password: password,
-        sessionTtl: get_session_ttl(ROLE_STAF),
+        session_ttl: get_session_ttl(ROLE_STAF),
     };    
-    return createUserAndAuth(userWithAuth);
+    return add_user_and_auth(userWithAuth);
 }
 
 /**
@@ -131,7 +131,7 @@ export async function create_workshop_staff(userName:string, nickName:string, ph
  */
 export async function query_userinfos_by_role(role: string): Promise<UserInfo[]> {
     try {
-        const userInfos = findUsersByRole(role);
+        const userInfos = find_users_by_role(role);
         return Promise.resolve(userInfos);
     } catch (error) {
         console.error("occur error : " + error);

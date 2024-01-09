@@ -21,7 +21,7 @@ export type UserTtl = {
  * @param password 
  * @returns 
  */
-export async function findUserByLoginName(loginName: string, password: string): Promise<UserTtl> {
+export async function find_user_by_loginName(loginName: string, password: string): Promise<UserTtl> {
     const encodedPassword = md5_string(password);
     try {
         const userInfos: UserTtl[] = await prisma.$queryRawUnsafe(
@@ -52,7 +52,7 @@ export async function findUserByLoginName(loginName: string, password: string): 
  * @param ttl : seconds
  * @returns 
  */
-export async function createLoginSession(userId: string, roleId: string, userAgent: string, ttl: number): Promise<LoginSession> {
+export async function add_loginSession(userId: string, roleId: string, userAgent: string, ttl: number): Promise<LoginSession> {
     try {
         const loginSession = await prisma.u_login_sessions.create({
             data: {
@@ -81,7 +81,7 @@ export async function createLoginSession(userId: string, roleId: string, userAge
  * @param sessionId 
  * @returns 
  */
-export async function updateLoginSession(sessionId: string): Promise<void> {
+export async function update_loginSession(sessionId: string): Promise<void> {
     try {
         const result: number = await prisma.$executeRaw`UPDATE u_login_sessions SET renew_count=renew_count+1, u_at=now() WHERE id=${sessionId}`;
         return Promise.resolve();
@@ -96,7 +96,7 @@ export async function updateLoginSession(sessionId: string): Promise<void> {
  * @param sessionId 
  * @returns 
  */
-export async function invalidateLoginSession(sessionId: string): Promise<void> {
+export async function invalidate_loginSession(sessionId: string): Promise<void> {
     try {
         await prisma.u_login_sessions.update({
             where: {
@@ -114,16 +114,16 @@ export async function invalidateLoginSession(sessionId: string): Promise<void> {
 }
 
 export type UserWithAuth = {
-    userName: string;
-    nickName: string;
-    roleId: string;
+    user_name: string;
+    nick_name: string;
+    role: string;
     address: string;
-    phoneNumber: string;
+    phone_number: string;
     email: string;
-    photoUrl: string;
-    loginName: string;
+    photo_url: string;
+    login_name: string;
     password: string;
-    sessionTtl: number;
+    session_ttl: number;
 };
 
 /**
@@ -131,33 +131,33 @@ export type UserWithAuth = {
  * @param userWithAuth 
  * @returns 
  */
-export async function createUserAndAuth(userWithAuth:UserWithAuth): Promise<string> {
+export async function add_user_and_auth(userWithAuth:UserWithAuth): Promise<string> {
     try {
         return await prisma.$transaction(async (tx): Promise<string> => {
             // create user record
             const user = await tx.u_users.create({
                 data: {
                     id: generate_id(),
-                    user_name: userWithAuth.userName,
-                    nick_name: userWithAuth.nickName,
-                    role_id: userWithAuth.roleId,
+                    user_name: userWithAuth.user_name,
+                    nick_name: userWithAuth.nick_name,
+                    role_id: userWithAuth.role,
                     address: userWithAuth.address,
-                    phone_number: userWithAuth.phoneNumber,
+                    phone_number: userWithAuth.phone_number,
                     email: userWithAuth.email,
-                    photo_url: userWithAuth.photoUrl,
+                    photo_url: userWithAuth.photo_url,
                 }
             });
             if (user == undefined || user == null) {
-                throw new Error(`create user failed : ${userWithAuth.userName}`);
+                throw new Error(`create user failed : ${userWithAuth.user_name}`);
             }
             // create user auth record
             const auth = await tx.u_auths.create({
                 data: {
                     id: generate_id(),
                     user_id: user.id,
-                    login_name: userWithAuth.loginName,
+                    login_name: userWithAuth.login_name,
                     auth_pass: md5_string(userWithAuth.password),
-                    session_ttl: userWithAuth.sessionTtl,
+                    session_ttl: userWithAuth.session_ttl,
                 }
             });
             return Promise.resolve(auth.user_id as string);
@@ -187,7 +187,7 @@ export type UserInfo = {
  * @param userId 
  * @returns 
  */
-export async function findUserById(userId: string): Promise<UserInfo> {
+export async function find_user_by_id(userId: string): Promise<UserInfo> {
     try {
         const userInfo: UserInfo | null = await prisma.u_users.findUnique({
             where: {
@@ -211,7 +211,7 @@ export async function findUserById(userId: string): Promise<UserInfo> {
 /**
  * Find user list by role
  */
-export async function findUsersByRole(role: string): Promise<UserInfo[]> {
+export async function find_users_by_role(role: string): Promise<UserInfo[]> {
     try {
         const userInfos: UserInfo[] = await prisma.u_users.findMany({
             where: {

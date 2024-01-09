@@ -2,9 +2,9 @@
  * Merchant DAO
  */
 import { prisma } from '@App/util/dbwrapper';
-import { FailToCreateMerchant, FailToCreateWorkshop, NotFoundMerchant, NotFoundWorkshop } from '@App/util/errcode';
+import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundWorkshop } from '@App/util/errcode';
 import { generate_id } from '@App/util/genid';
-import { merchants, merchant_workshops } from '@prisma/client';
+import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
 
 /**
  * Create a merchant
@@ -19,7 +19,7 @@ import { merchants, merchant_workshops } from '@prisma/client';
  * @param phoneNumber 
  * @returns 
  */
-export async function createMerchant(nation:string, province:string, city:string, merchantSN:string, 
+export async function add_merchant(nation: string, province: string, city: string, merchantSN: string,
     merchantName: string, introduction: string, websiteUrl: string, address: string, phoneNumber: string): Promise<string> {
     try {
         const merchant = await prisma.merchants.create({
@@ -40,6 +40,20 @@ export async function createMerchant(nation:string, province:string, city:string
     } catch (error) {
         console.error(error);
         return Promise.reject(FailToCreateMerchant);
+    }
+}
+
+export async function remove_merchant(id: string): Promise<void> {
+    try {
+        const merchant = await prisma.merchants.delete({
+            where: {
+                id: id,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToDeleteMerchant);
     }
 }
 
@@ -65,7 +79,7 @@ export type Merchant = {
  * @param merchantId 
  * @returns 
  */
-export async function findMerchantById(merchantId: string): Promise<Merchant> {
+export async function find_merchant_by_id(merchantId: string): Promise<Merchant> {
     try {
         const merchant: Merchant | null = await prisma.merchants.findUnique({
             where: {
@@ -85,6 +99,19 @@ export async function findMerchantById(merchantId: string): Promise<Merchant> {
     }
 }
 
+/**
+ * Find all merchants
+ * @returns 
+ */
+export async function find_merchants(): Promise<Merchant[]> {
+    try {
+        const merchants: Merchant[] = await prisma.merchants.findMany();
+        return Promise.resolve(merchants);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundWorkshop);
+    }
+}
 
 /**
  * Create a workshop
@@ -98,8 +125,8 @@ export async function findMerchantById(merchantId: string): Promise<Merchant> {
  * @param longitude 
  * @returns 
  */
-export async function createWorkshop(merchantId:string, workshopSN:string, workshopName: string, introduction: string, 
-    address: string, phoneNumber: string, latitude:string, longitude:string): Promise<string> {
+export async function add_workshop(merchantId: string, workshopSN: string, workshopName: string, introduction: string,
+    address: string, phoneNumber: string, latitude: string, longitude: string): Promise<string> {
     try {
         const workshop = await prisma.merchant_workshops.create({
             data: {
@@ -122,6 +149,20 @@ export async function createWorkshop(merchantId:string, workshopSN:string, works
 }
 
 
+export async function remove_workshop(id: string): Promise<void> {
+    try {
+        const merchant = await prisma.merchant_workshops.delete({
+            where: {
+                id: id,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToDeleteWorkshop);
+    }
+}
+
 export type Worhshop = {
     id: string
     merchant_id: string | null
@@ -143,7 +184,7 @@ export type Worhshop = {
  * @param workshopId 
  * @returns 
  */
-export async function findWorkshopById(workshopId: string): Promise<Worhshop> {
+export async function find_workshop_by_id(workshopId: string): Promise<Worhshop> {
     try {
         const workshop: Worhshop | null = await prisma.merchant_workshops.findUnique({
             where: {
@@ -169,7 +210,7 @@ export async function findWorkshopById(workshopId: string): Promise<Worhshop> {
  * @param merchantId 
  * @returns 
  */
-export async function findWorkshopsByMerchant(merchantId: string): Promise<Worhshop[]> {
+export async function find_workshops_by_merchant(merchantId: string): Promise<Worhshop[]> {
     try {
         const workshops: Worhshop[] = await prisma.merchant_workshops.findMany({
             where: {
@@ -182,5 +223,89 @@ export async function findWorkshopsByMerchant(merchantId: string): Promise<Worhs
         return Promise.reject(NotFoundWorkshop);
     }
 }
+
+/**
+ * Add a member into a merchant
+ * @param merchantId 
+ * @param workshopId 
+ * @param memberId 
+ * @returns 
+ */
+export async function add_update_merchant_member(merchantId: string, workshopId: string, memberId: string): Promise<void> {
+    try {
+        const merchantMember: merchant_members | null = await prisma.merchant_members.upsert({
+            create: {
+                merchant_id: merchantId,
+                member_id: memberId,
+                workshop_id: workshopId,
+            },
+            update: {
+                workshop_id: workshopId,
+            },
+            where: {
+                merchant_id_member_id : {
+                    merchant_id: merchantId,
+                    member_id: memberId,
+                }
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundWorkshop);
+    }
+}
+
+/**
+ * Remove a member from a merchant
+ * @param merchantId 
+ * @param memberId 
+ * @returns 
+ */
+export async function remove_merchant_member(merchantId: string, memberId: string): Promise<void>  {
+    try {
+        const merchantMember: merchant_members | null = await prisma.merchant_members.delete({
+            where: {
+                merchant_id_member_id : {
+                    merchant_id: merchantId,
+                    member_id: memberId,
+                }
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundWorkshop);
+    }
+}
+
+
+/**
+ * Find members of merchant
+ * @param merchantId 
+ * @returns 
+ */
+export async function find_members_by_merchant(merchantId: string): Promise<u_users[]> {
+    try {
+        const userInfos: u_users[] = await prisma.$queryRawUnsafe(
+            'SELECT u.*  FROM u_users u, merchant_members m ' +
+            'WHERE u.id = m.member_id ' +
+            'AND m.merchant_id = $1 ',
+            merchantId
+        );
+        return new Promise((resolve, reject) => {
+            if (userInfos == undefined || userInfos.length == 0) {
+                resolve([]);
+            } else {
+                resolve(userInfos);
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return Promise.resolve([]);
+    }
+}
+
+
 
 
