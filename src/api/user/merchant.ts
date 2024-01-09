@@ -18,7 +18,7 @@ type AddMerchantRequest = {
     phone_number: string
 };
 
-merchantRouter.get("/add", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/add", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -50,7 +50,7 @@ merchantRouter.get("/add", checkAuthToken, async (req: Request, res: Response) =
 });
 
 
-merchantRouter.get("/remove", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/remove", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -122,7 +122,7 @@ type AddWorkshopRequest = {
     longitude: string
 };
 
-merchantRouter.get("/addWorkshop", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/addWorkshop", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -154,7 +154,7 @@ merchantRouter.get("/addWorkshop", checkAuthToken, async (req: Request, res: Res
 });
 
 
-merchantRouter.get("/removeWorkshop", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/removeWorkshop", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -189,7 +189,7 @@ type QueryAllWorkshopsRequest = {
     merchant_id: string,
 };
 
-merchantRouter.get("/queryAllWorkshops", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/queryAllWorkshops", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -226,7 +226,7 @@ type AddMemberRequest = {
     workshop_id: string,
 };
 
-merchantRouter.get("/addMember", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/addMember", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -261,7 +261,7 @@ type RemoveMemberRequest = {
     member_id: string,
 };
 
-merchantRouter.get("/removeMember", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/removeMember", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -296,7 +296,7 @@ type QueryMembersRequest = {
     merchant_id: string
 };
 
-merchantRouter.get("/queryMembers", checkAuthToken, async (req: Request, res: Response) => {
+merchantRouter.post("/queryMembers", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
