@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express"
 import { checkAuthToken, LoginSession } from "@App/util/jwtoken"
 import { NormalCreateDeleteRequest, ROLES_WITH_AMDIN, allowByRole } from "@App/util/constants";
-import { add_merchant, add_update_merchant_member, add_workshop, find_members_by_merchant, find_merchants, find_workshops_by_merchant, remove_merchant, remove_merchant_member, remove_workshop } from "@App/dao/merchant_dao";
+import { add_merchant, add_update_merchant_member, add_workshop, find_members_by_merchant, find_merchant_by_id, find_merchants, find_workshops_by_merchant, remove_merchant, remove_merchant_member, remove_workshop } from "@App/dao/merchant_dao";
 
 export const merchantRouter = express.Router();
 
@@ -80,6 +80,36 @@ merchantRouter.post("/remove", checkAuthToken, async (req: Request, res: Respons
         });
 });
 
+
+merchantRouter.post("/queryOne", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const normalCreateDeleteRequest = req.body as NormalCreateDeleteRequest;
+    find_merchant_by_id(normalCreateDeleteRequest.id)
+        .then((merchant) => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: merchant
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
 
 merchantRouter.get("/queryAll", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {

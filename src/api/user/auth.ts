@@ -72,7 +72,7 @@ authRouter.post("/check", async (req: Request, res: Response) => {
                     meta: { status: true, message: "ok" },
                     data: {
                         session: verifyResult.loginSession,
-                        newToken: verifyResult.newToken
+                        new_token: verifyResult.newToken
                     }
                 }
             );

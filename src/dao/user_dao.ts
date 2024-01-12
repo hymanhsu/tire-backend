@@ -68,7 +68,7 @@ export async function add_loginSession(userId: string, roleId: string, userAgent
             role_id: roleId,
             user_agent: loginSession.user_agent as string,
             ttl: ttl,
-            exp: 0,
+            exp: Math.floor(Date.now() / 1000) + ttl,
         });
     } catch (error) {
         console.error(error);

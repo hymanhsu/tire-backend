@@ -1,5 +1,5 @@
 import { UserInfo, add_loginSession, update_loginSession, find_user_by_loginName, add_user_and_auth, invalidate_loginSession, UserTtl } from "@App/dao/user_dao"
-import { CError, FailToVerifyToken } from "@App/util/errcode"
+import { CError, FailToUpdateToken, FailToVerifyToken } from "@App/util/errcode"
 import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
 import { generate_token, verify_token, LoginSession } from "@App/util/jwtoken";
 
@@ -23,7 +23,7 @@ export async function signup(loginName: string, phoneNumber: string, email: stri
         login_name: loginName,
         password: password,
         session_ttl: get_session_ttl(ROLE_CUST),
-    };    
+    };
     return add_user_and_auth(userWithAuth);
 }
 
@@ -73,36 +73,43 @@ export type VerifyResult = {
  */
 export async function check_token(token: string, update: boolean): Promise<VerifyResult> {
     try {
-        const decoded = verify_token(token);
-        if (decoded == null) {
+        const decoded = verify_token(token, true);
+        if (decoded == null)
             return Promise.reject(FailToVerifyToken);
-        } else {
-            const loginSession = decoded as LoginSession;
-            if (update) {
-                update_loginSession(loginSession.id);
-                let newToken = generate_token(loginSession, loginSession.ttl);
-                return Promise.resolve({
-                    loginSession: loginSession,
-                    newToken: newToken
-                });
-            } else {
-                // check expire time if near (<10min)
-                const left_ttl = Math.floor(loginSession.exp - Date.now() / 1000);
-                console.log(`user [${loginSession.user_id}] remain ttl : ${left_ttl} s`);
-                if (left_ttl < 10 * 60) {
-                    update_loginSession(loginSession.id);
-                    let newToken = generate_token(loginSession, loginSession.ttl);
-                    return Promise.resolve({
-                        loginSession: loginSession,
-                        newToken: newToken
-                    });
-                } else {
-                    return Promise.resolve({
-                        loginSession: loginSession,
-                        newToken: ""
-                    });
-                }
+        
+        const loginSession = decoded as LoginSession;
+
+        if(Math.floor(Date.now() / 1000) > loginSession.exp ){
+            if(Math.floor(Date.now() / 1000) - loginSession.exp > 3 * 24 * 60 * 60){ // expired 3 days, reject refresh
+                return Promise.reject(FailToUpdateToken);
             }
+        }
+
+        if (update) {
+            // forcely update even if has expired
+            update_loginSession(loginSession.id);
+            let newToken = generate_token(loginSession, loginSession.ttl);
+            return Promise.resolve({
+                loginSession: loginSession,
+                newToken: newToken
+            });
+        }
+        
+        // check expire time if near (<10min)
+        const left_ttl = Math.floor(loginSession.exp - Date.now() / 1000);
+        console.log(`user [${loginSession.user_id}] remain ttl : ${left_ttl} s`);
+        if (left_ttl < 10 * 60) {
+            update_loginSession(loginSession.id);
+            let newToken = generate_token(loginSession, loginSession.ttl);
+            return Promise.resolve({
+                loginSession: loginSession,
+                newToken: newToken
+            });
+        } else {
+            return Promise.resolve({
+                loginSession: loginSession,
+                newToken: ""
+            });
         }
     } catch (error) {
         console.error("occur error : " + error);
