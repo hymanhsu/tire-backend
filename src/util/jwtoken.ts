@@ -1,13 +1,20 @@
 import jwt, { Secret } from "jsonwebtoken"
 import { Request, Response, NextFunction } from "express"
 
+export type RoleOption = {
+    role: string;
+    merchant_id: string;
+    merchant_name: string;
+    workshop_id: string; // maybe empty
+};
+
 export type LoginSession = {
     id: string;
     user_id: string;
-    role_id: string;
-    user_agent: string;
+    role: string; // maybe empty
     ttl: number;
     exp: number;
+    role_option?: RoleOption;
 };
 
 // export const SECRET_KEY: Secret = 'your-secret-key-here';

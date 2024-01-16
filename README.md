@@ -38,6 +38,13 @@ Backend--x Front: return login reponse
 Front-x Customer: return login reponse
 ```
 
+## Rules on roles
+
+1, Only root can create/delete administrators.
+1, Platform don't connect to the merchant's business
+2, Everyone has a first-level role, which is set in the u_users with account's creating. 
+3, If the user is a merchant, he maybe
+
 # Contact
 
 Hyman Hsu's email : hymanhsu8175@gmail.com

@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express"
-import { signup, login, check_token, logout, LoginResult } from "@App/service/auth_service"
+import { signup, login, check_token, logout, LoginResult, LoginAsUserResult, loginAsUser, loginProceedAsUser } from "@App/service/auth_service"
+import { LoginSession, RoleOption } from "@App/util/jwtoken";
 
 export const authRouter = express.Router();
 
@@ -41,6 +42,66 @@ authRouter.post("/login", async (req: Request, res: Response) => {
     const loginRequest = req.body as LoginRequest;
     login(loginRequest.login_name, loginRequest.password, userAgent)
         .then((loginResult: LoginResult) => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: { token: loginResult.token, session: loginResult.loginSession }
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
+
+authRouter.post("/loginAsUser", async (req: Request, res: Response) => {
+    const userAgent = req.get("user-agent") as string;
+    const loginRequest = req.body as LoginRequest;
+    loginAsUser(loginRequest.login_name, loginRequest.password, userAgent)
+        .then((loginResult: LoginAsUserResult) => {
+            if(loginResult.roleOptions == undefined){
+                res.json(
+                    {
+                        meta: { status: true, message: "ok" },
+                        data: { token: loginResult.token, session: loginResult.loginSession }
+                    }
+                );
+            }else{
+                res.json(
+                    {
+                        meta: { status: true, message: "ok" },
+                        data: { token: loginResult.token, session: loginResult.loginSession, role_options: loginResult.roleOptions }
+                    }
+                );
+            }
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
+
+type LoginProceedRequest = {
+    token: string;
+    session: LoginSession;
+    role_options: RoleOption[];
+    selected: number;
+};
+
+authRouter.post("/loginProceedAsUser", async (req: Request, res: Response) => {
+    const userAgent = req.get("user-agent") as string;
+    const loginRequest = req.body as LoginProceedRequest;
+    loginProceedAsUser(loginRequest.token, loginRequest.session, loginRequest.role_options, loginRequest.selected, userAgent)
+        .then((loginResult: LoginAsUserResult) => {
             res.json(
                 {
                     meta: { status: true, message: "ok" },

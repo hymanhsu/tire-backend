@@ -1,14 +1,13 @@
 /**
  * Roles
  */
+export const ROLE_CUST = "CUST";
 export const ROLE_ROOT = "ROOT";
 export const ROLE_ADMN = "ADMN";
 export const ROLE_MERT = "MERT";
 export const ROLE_MANR = "MANR";
 export const ROLE_STAF = "STAF";
-export const ROLE_CUST = "CUST";
 
-export const ROLES_WITH_AMDIN = [ROLE_ROOT,ROLE_ADMN];
 
 /**
  * Return ttl, unit is hour
@@ -40,6 +39,8 @@ export interface BaseResponse {
     },
     data: any,
 };
+
+export const ROLES_WITH_AMDIN = [ROLE_ROOT,ROLE_ADMN];
 
 /**
  * Judge if allow based on role

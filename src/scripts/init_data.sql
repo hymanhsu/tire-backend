@@ -2,19 +2,11 @@
 -- tire=> \i D:/workspace/tire-backend/src/scripts/init_data.sql
 
 
--- roles
-INSERT INTO u_roles (id, session_ttl) VALUES('ROOT', 3600);
-INSERT INTO u_roles (id, session_ttl) VALUES('ADMN', 28800);
-INSERT INTO u_roles (id, session_ttl) VALUES('MERT', 28800);
-INSERT INTO u_roles (id, session_ttl) VALUES('MANR', 28800);
-INSERT INTO u_roles (id, session_ttl) VALUES('STAF', 28800);
-INSERT INTO u_roles (id, session_ttl) VALUES('CUST', 86400);
+-- for root
+INSERT INTO u_users (id, nick_name, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', '6661236789', 'root666@gmail.com');
+INSERT INTO u_base_roles (id, user_id, role) VALUES('i9Z_WH-uaa9Zs3W4vK3CX', 'AWPo68O4So3oederv9jiJ', 'ROOT');
+INSERT INTO u_auths (id, user_id, login_name, auth_pass, session_ttl) VALUES('vZQf6t4wct14PZYZbLfNH', 'AWPo68O4So3oederv9jiJ', 'root', 'fc5e038d38a57032085441e7fe7010b0', 3600);
 
--- users
-INSERT INTO u_users (id, user_name, nick_name, role_id, phone_number, email) VALUES('AWPo68O4So3oederv9jiJ', 'root', 'root', 'ROOT', '6661236789', 'root666@gmail.com');
-
--- auths
-INSERT INTO u_auths (id, user_id, login_name, auth_pass, session_ttl) VALUES('vZQf6t4wct14PZYZbLfNH', 'AWPo68O4So3oederv9jiJ', 'root', 'fc5e038d38a57032085441e7fe7010b0', 1);
 
 -- Categories of products
 ---------------------------------------------------

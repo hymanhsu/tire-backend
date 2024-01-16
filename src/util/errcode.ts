@@ -22,9 +22,13 @@ export class CError extends Error {
 
 export const NotFoundAuthenRecord = new CError(100001, 'NotFoundAuthenRecord', 'Not found the record of authentication!');
 export const NotFoundUserRecord = new CError(100002, 'NotFoundUserRecord', 'Not found the record of user!');
+export const NotFoundUserRole = new CError(100002, 'NotFoundUserRole', 'Not found the role of user!');
+
 
 export const FailToUpdateToken = new CError(100010, 'FailToUpdateToken', 'Fail to update token!');
 export const FailToVerifyToken = new CError(100010, 'FailToVerifyToken', 'Fail to verify token!');
+export const FailToCheckParam = new CError(100010, 'FailToCheckParam', 'Fail to check parameters!');
+
 export const FailToCreateLoginSessionRecord = new CError(100011, 'FailToCreateLoginSessionRecord', 'Fail to create login session db record!');
 export const FailToCreateUser = new CError(100012, 'FailToCreateUser', 'Fail to create user!');
 export const FailToInvalidateLoginSession = new CError(100013, 'FailToInvalidateLoginSession', 'Fail to invalidate login session!');
@@ -36,3 +40,5 @@ export const NotFoundMerchant = new CError(101002, 'NotFoundMerchant', 'Not foun
 export const FailToCreateWorkshop = new CError(101001, 'FailToCreateWorkshop', 'Fail to create workshop record!');
 export const FailToDeleteWorkshop = new CError(101001, 'FailToDeleteWorkshop', 'Fail to delete workshop record!');
 export const NotFoundWorkshop = new CError(101002, 'NotFoundWorkshop', 'Not found the record of workshop!');
+
+
