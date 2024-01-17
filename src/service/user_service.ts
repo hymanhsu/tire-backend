@@ -47,6 +47,7 @@ export async function create_administrator(nickName:string, phoneNumber:string,
     return add_user_with_auth(userWithAuth);
 }
 
+
 /**
  * Create a new owner of a merchant
  * @param merchantId 

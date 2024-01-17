@@ -20,6 +20,17 @@ dotenv.config({ path: envFile });
 
 const app: Express = express();
 
+const filterByMorgan = (request: express.Request, response: express.Response):boolean => {
+    const skipUris = ["/api/auth/check"];
+    const uri = request.baseUrl + request.url;
+    for(const item of skipUris){
+        if(item == uri){
+            return true;
+        }
+    }
+    return false;
+}
+
 // using the dependancies
 app.use(helmet());
 app.use(cors());
@@ -27,7 +38,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(responseTime());
 if (process.env.NODE_ENV != 'production') {
-    morganBody(app);
+    morganBody(app, {
+        skip: filterByMorgan,
+    });
 }
 
 // setting routers

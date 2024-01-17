@@ -224,61 +224,6 @@ export async function find_workshops_by_merchant(merchantId: string): Promise<Wo
     }
 }
 
-/**
- * Add a member into a merchant
- * @param merchantId 
- * @param workshopId 
- * @param memberId 
- * @returns 
- */
-export async function add_update_merchant_member(merchantId: string, workshopId: string, memberId: string): Promise<void> {
-    try {
-        const merchantMember: merchant_members | null = await prisma.merchant_members.upsert({
-            create: {
-                merchant_id: merchantId,
-                member_id: memberId,
-                workshop_id: workshopId,
-            },
-            update: {
-                workshop_id: workshopId,
-            },
-            where: {
-                merchant_id_member_id : {
-                    merchant_id: merchantId,
-                    member_id: memberId,
-                }
-            }
-        });
-        return Promise.resolve();
-    } catch (error) {
-        console.error(error);
-        return Promise.reject(NotFoundWorkshop);
-    }
-}
-
-/**
- * Remove a member from a merchant
- * @param merchantId 
- * @param memberId 
- * @returns 
- */
-export async function remove_merchant_member(merchantId: string, memberId: string): Promise<void>  {
-    try {
-        const merchantMember: merchant_members | null = await prisma.merchant_members.delete({
-            where: {
-                merchant_id_member_id : {
-                    merchant_id: merchantId,
-                    member_id: memberId,
-                }
-            }
-        });
-        return Promise.resolve();
-    } catch (error) {
-        console.error(error);
-        return Promise.reject(NotFoundWorkshop);
-    }
-}
-
 
 /**
  * Find members of merchant

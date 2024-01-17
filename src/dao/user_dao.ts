@@ -137,6 +137,46 @@ export async function add_user_with_auth(userWithAuth: UserWithAuth): Promise<st
 }
 
 
+/**
+ * Remove one user and its' all relation data
+ * @param userId 
+ * @returns 
+ */
+export async function remove_user(userId: string): Promise<void> {
+    try{
+        return await prisma.$transaction(async (tx): Promise<void> => {
+            await tx.u_users.delete({
+                where: {
+                    id: userId,
+                }
+            });
+            await tx.u_base_roles.deleteMany({
+                where: {
+                    user_id: userId,
+                }
+            });
+            await tx.u_auths.deleteMany({
+                where: {
+                    user_id: userId,
+                }
+            });
+            await tx.u_login_sessions.deleteMany({
+                where: {
+                    user_id: userId,
+                }
+            });
+            await tx.merchant_members.deleteMany({
+                where: {
+                    user_id: userId,
+                }
+            });
+        }); 
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToCreateUser);
+    }
+}
+
 export type UserTtl = {
     id: string;
     role: string;
@@ -404,3 +444,16 @@ export async function find_customer_by_id(userId: string): Promise<c_customers> 
     }
 }
 
+export async function find_all_administrators(): Promise<u_users[]> {
+    try {
+        const userInfos: u_users[] = await prisma.$queryRawUnsafe(
+            'SELECT u.*  FROM u_users u, u_base_roles b ' +
+            'WHERE u.id = b.user_id  ' +
+            'AND b.role = \'ADMN\' ORDER BY u.c_at DESC'
+        );
+        return Promise.resolve(userInfos);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundUserRecord);
+    }
+}
