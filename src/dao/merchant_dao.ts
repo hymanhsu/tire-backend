@@ -105,7 +105,9 @@ export async function find_merchant_by_id(merchantId: string): Promise<Merchant>
  */
 export async function find_merchants(): Promise<Merchant[]> {
     try {
-        const merchants: Merchant[] = await prisma.merchants.findMany();
+        const merchants: Merchant[] = await prisma.merchants.findMany({
+            orderBy: {c_at: 'desc'}
+        });
         return Promise.resolve(merchants);
     } catch (error) {
         console.error(error);
