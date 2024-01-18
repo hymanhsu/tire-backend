@@ -113,9 +113,10 @@ export async function add_user_with_auth(userWithAuth: UserWithAuth): Promise<st
                 }
             }
             // create role record only for users like merchant's owner/manager/staff
-            if (userWithAuth.role == ROLE_MERT
+            if ((userWithAuth.role == ROLE_MERT
                 || userWithAuth.role == ROLE_MANR
-                || userWithAuth.role == ROLE_STAF) {
+                || userWithAuth.role == ROLE_STAF) 
+                && userWithAuth.merchant_id != "") {
                 const member = await tx.merchant_members.create({
                     data: {
                         id: generate_id(),

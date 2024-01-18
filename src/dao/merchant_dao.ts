@@ -2,7 +2,7 @@
  * Merchant DAO
  */
 import { prisma } from '@App/util/dbwrapper';
-import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundWorkshop } from '@App/util/errcode';
+import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundUserRecord, NotFoundWorkshop } from '@App/util/errcode';
 import { generate_id } from '@App/util/genid';
 import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
 
@@ -112,6 +112,28 @@ export async function find_merchants(): Promise<Merchant[]> {
     } catch (error) {
         console.error(error);
         return Promise.reject(NotFoundWorkshop);
+    }
+}
+
+/**
+ * Find all merchant owners
+ * @param merchantId 
+ * @returns 
+ */
+export async function find_all_merchant_owners(merchantId: string): Promise<u_users[]> {
+    try {
+        const userInfos: u_users[] = await prisma.$queryRawUnsafe(
+            'SELECT u.*  FROM u_users u, merchant_members mm ' +
+            'WHERE u.id = mm.user_id  ' +
+            'AND mm.role = \'MERT\' '+
+            'AND mm.merchant_id = $1 '+
+            'ORDER BY u.c_at DESC',
+            merchantId
+        );
+        return Promise.resolve(userInfos);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(NotFoundUserRecord);
     }
 }
 
