@@ -239,6 +239,9 @@ export async function find_workshops_by_merchant(merchantId: string): Promise<Wo
         const workshops: Worhshop[] = await prisma.merchant_workshops.findMany({
             where: {
                 merchant_id: merchantId
+            },
+            orderBy: {
+                c_at: 'desc'
             }
         });
         return Promise.resolve(workshops);
