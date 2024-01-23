@@ -286,7 +286,8 @@ export async function find_base_role(userId: string): Promise<string> {
 
 export async function find_merchant_roles(userId: string): Promise<RoleOption[]>{
     const roleOptions: RoleOption[] = await prisma.$queryRawUnsafe(
-        'SELECT mm.role, mm.merchant_id, m.merchant_name, mm.workshop_id  FROM merchant_members mm, merchants m ' +
+        'SELECT mm.role, mm.merchant_id, m.merchant_name, mm.workshop_id '+
+        'FROM merchant_members mm, merchants m ' +
         'WHERE mm.merchant_id = m.id AND m.invalid = FALSE ' +
         'AND mm.user_id = $1',
         userId
@@ -297,7 +298,7 @@ export async function find_merchant_roles(userId: string): Promise<RoleOption[]>
             result.push(item);
         }else{
             // NOT owner, must need workshop id
-            if(item.workshop_id != ""){
+            if(item.workshop_id != null && item.workshop_id.trim() != ''){
                 result.push(item);
             }
         }

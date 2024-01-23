@@ -2,7 +2,7 @@
  * Merchant DAO
  */
 import { prisma } from '@App/util/dbwrapper';
-import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundUserRecord, NotFoundWorkshop } from '@App/util/errcode';
+import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundMerchantWorkshop, NotFoundUserRecord, NotFoundWorkshop } from '@App/util/errcode';
 import { generate_id } from '@App/util/genid';
 import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
 
@@ -58,30 +58,14 @@ export async function remove_merchant(id: string): Promise<void> {
 }
 
 
-export type Merchant = {
-    id: string
-    nation: string | null
-    province: string | null
-    city: string | null
-    merchant_sn: string | null
-    merchant_name: string | null
-    introduction: string | null
-    website_url: string | null
-    address: string | null
-    phone_number: string | null
-    invalid: boolean | null
-    c_at: Date | null
-    u_at: Date | null
-};
-
 /**
  * Find a merchant by id
  * @param merchantId 
  * @returns 
  */
-export async function find_merchant_by_id(merchantId: string): Promise<Merchant> {
+export async function find_merchant_by_id(merchantId: string): Promise<merchants> {
     try {
-        const merchant: Merchant | null = await prisma.merchants.findUnique({
+        const merchant: merchants | null = await prisma.merchants.findUnique({
             where: {
                 id: merchantId
             }
@@ -99,13 +83,14 @@ export async function find_merchant_by_id(merchantId: string): Promise<Merchant>
     }
 }
 
+
 /**
  * Find all merchants
  * @returns 
  */
-export async function find_merchants(): Promise<Merchant[]> {
+export async function find_merchants(): Promise<merchants[]> {
     try {
-        const merchants: Merchant[] = await prisma.merchants.findMany({
+        const merchants: merchants[] = await prisma.merchants.findMany({
             orderBy: {c_at: 'desc'}
         });
         return Promise.resolve(merchants);
@@ -187,30 +172,15 @@ export async function remove_workshop(id: string): Promise<void> {
     }
 }
 
-export type Worhshop = {
-    id: string
-    merchant_id: string | null
-    workshop_sn: string | null
-    workshop_name: string | null
-    introduction: string | null
-    address: string | null
-    phone_number: string | null
-    latitude: string | null
-    longitude: string | null
-    invalid: boolean | null
-    c_at: Date | null
-    u_at: Date | null
-};
-
 
 /**
  * Find a workshop by id
  * @param workshopId 
  * @returns 
  */
-export async function find_workshop_by_id(workshopId: string): Promise<Worhshop> {
+export async function find_workshop_by_id(workshopId: string): Promise<merchant_workshops> {
     try {
-        const workshop: Worhshop | null = await prisma.merchant_workshops.findUnique({
+        const workshop: merchant_workshops | null = await prisma.merchant_workshops.findUnique({
             where: {
                 id: workshopId
             }
@@ -234,9 +204,9 @@ export async function find_workshop_by_id(workshopId: string): Promise<Worhshop>
  * @param merchantId 
  * @returns 
  */
-export async function find_workshops_by_merchant(merchantId: string): Promise<Worhshop[]> {
+export async function find_workshops_by_merchant(merchantId: string): Promise<merchant_workshops[]> {
     try {
-        const workshops: Worhshop[] = await prisma.merchant_workshops.findMany({
+        const workshops: merchant_workshops[] = await prisma.merchant_workshops.findMany({
             where: {
                 merchant_id: merchantId
             },
@@ -279,6 +249,89 @@ export async function find_members_by_merchant(merchantId: string): Promise<u_us
     }
 }
 
+export type u_users_with_role = u_users & {
+    role: string
+};
+
+export async function find_members_by_workshop(merchantId: string, workshopId: string): Promise<u_users_with_role[]> {
+    try {
+        const userInfos: u_users_with_role[] = await prisma.$queryRawUnsafe(
+            'SELECT u.*, mm.role  FROM u_users u, merchant_members mm ' +
+            'WHERE u.id = mm.user_id ' +
+            'AND mm.merchant_id = $1 AND mm.workshop_id = $2 ' +
+            'ORDER BY u.c_at DESC',
+            merchantId, workshopId
+        );
+        return new Promise((resolve, reject) => {
+            if (userInfos == undefined || userInfos.length == 0) {
+                resolve([]);
+            } else {
+                resolve(userInfos);
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        return Promise.resolve([]);
+    }
+}
+
+export async function add_member_to_workshop(merchantId: string, workshopId: string, userId: string, role: string): Promise<void> {
+    try {
+        const member: merchant_members | null = await prisma.merchant_members.findFirst({
+            where: {
+                merchant_id: merchantId,
+                workshop_id: workshopId,
+                user_id: userId,
+                role: role,
+            }
+        });
+        if(member != null){
+            // have defined before
+            return Promise.resolve();
+        }
+        const memberCreated = await prisma.merchant_members.create({
+            data: {
+                id: generate_id(),
+                user_id: userId,
+                role: role,
+                merchant_id: merchantId,
+                workshop_id: workshopId,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(error);
+    }
+}
 
 
+export async function remove_member_from_workshop(merchantId: string, workshopId: string, userId: string, role: string): Promise<void> {
+    try {
+        const member: merchant_members | null = await prisma.merchant_members.findFirst({
+            where: {
+                merchant_id: merchantId,
+                workshop_id: workshopId,
+                user_id: userId,
+                role: role,
+            }
+        });
+        if(member == null){
+            // have not defined before
+            return Promise.resolve();
+        }
+        const count = await prisma.merchant_members.deleteMany({
+            where: {
+                merchant_id: merchantId,
+                workshop_id: workshopId,
+                user_id: userId,
+                role: role,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(error);
+    }
+}
 

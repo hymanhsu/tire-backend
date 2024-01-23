@@ -210,7 +210,7 @@ CREATE TABLE merchant_members (
     -- role
     merchant_id CHAR(21) NOT NULL,
     -- merchant id 
-    workshop_id CHAR(21) DEFAULT '',
+    workshop_id CHAR(21),
     -- workshop id 
     c_at TIMESTAMPTZ DEFAULT now(),
     u_at TIMESTAMPTZ DEFAULT now()
