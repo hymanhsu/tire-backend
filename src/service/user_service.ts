@@ -125,7 +125,6 @@ export async function create_workshop_staff(merchantId:string, nickName:string, 
         password: password,
         session_ttl: get_session_ttl(ROLE_STAF),
         merchant_id: merchantId,
-
     };    
     return add_user_with_auth(userWithAuth);
 }

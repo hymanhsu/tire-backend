@@ -260,9 +260,10 @@ export async function find_workshops_by_merchant(merchantId: string): Promise<Wo
 export async function find_members_by_merchant(merchantId: string): Promise<u_users[]> {
     try {
         const userInfos: u_users[] = await prisma.$queryRawUnsafe(
-            'SELECT u.*  FROM u_users u, merchant_members m ' +
-            'WHERE u.id = m.member_id ' +
-            'AND m.merchant_id = $1 ',
+            'SELECT u.*  FROM u_users u ' +
+            'WHERE u.id IN ' +
+            '(SELECT m.user_id from merchant_members m WHERE ' +
+            'm.merchant_id = $1 ) ORDER BY u.c_at DESC',
             merchantId
         );
         return new Promise((resolve, reject) => {

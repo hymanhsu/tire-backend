@@ -291,7 +291,18 @@ export async function find_merchant_roles(userId: string): Promise<RoleOption[]>
         'AND mm.user_id = $1',
         userId
     );
-    return Promise.resolve(roleOptions);
+    const result: RoleOption[] = [];
+    roleOptions.forEach((item,index) => {
+        if(item.role == ROLE_MERT){
+            result.push(item);
+        }else{
+            // NOT owner, must need workshop id
+            if(item.workshop_id != ""){
+                result.push(item);
+            }
+        }
+    });
+    return Promise.resolve(result);
 }
 
 /**
