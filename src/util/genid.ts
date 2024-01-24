@@ -1,4 +1,6 @@
-import { nanoid } from "nanoid"
+import { nanoid, customAlphabet } from "nanoid"
+
+const prettyNanoid = customAlphabet('1234567890abcdef', 10);
 
 /**
  * Generate unique id
@@ -13,4 +15,12 @@ export function generate_id(size?: number): string {
     }
 }
 
+
+export function generate_pretty_id(size?: number): string {
+    if(size == undefined){
+        return prettyNanoid();
+    }else{
+        return prettyNanoid(size);
+    }
+}
 

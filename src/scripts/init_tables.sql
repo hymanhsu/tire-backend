@@ -225,8 +225,9 @@ DROP TABLE IF EXISTS categories;
 
 CREATE TABLE categories (
     id CHAR(3) PRIMARY KEY,
-    -- id, format : xdd
-    -- x rules :  1 : tire&wheel | 2 : accessories
+    -- id, by nano
+    parent_category_id CHAR(3),
+    -- parent category id
     title VARCHAR(50),
     -- title
     introduction VARCHAR(200) DEFAULT '',
@@ -241,7 +242,7 @@ CREATE TABLE categories (
 DROP TABLE IF EXISTS brands;
 
 CREATE TABLE brands (
-    id CHAR(4) PRIMARY KEY,
+    id CHAR(5) PRIMARY KEY,
     -- id, format : xddd,  xx rules as the following
     -- 1 : Premium , 2 : Mid-range , 
     -- 3|4|5 : Economy | 6,7,8,9 : Budget
@@ -271,7 +272,7 @@ CREATE TABLE products (
     -- introduction
     category_id CHAR(3),
     -- category id
-    brand_id CHAR(4),
+    brand_id CHAR(5),
     -- brand id
     model VARCHAR(50),
     -- model name
