@@ -43,3 +43,9 @@ export const FailToDeleteWorkshop = new CError(101001, 'FailToDeleteWorkshop', '
 export const NotFoundWorkshop = new CError(101002, 'NotFoundWorkshop', 'Not found the record of workshop!');
 
 
+export const FailToCreateCategory = new CError(101001, 'FailToCreateCategory', 'Fail to create category record!');
+export const FailToDeleteCategory = new CError(101001, 'FailToDeleteCategory', 'Fail to delete category record!');
+export const NotFoundCategories = new CError(101002, 'NotFoundCategories', 'Not found the record of category!');
+export const ExceedCategoryMaxLevel = new CError(101002, 'ExceedCategoryMaxLevel', 'Exceed the max level of category!');
+export const CannotRemoveCategoryWithChildren = new CError(101002, 'CannotRemoveCategoryWithChildren', 'Cannot remove the category with children!');
+

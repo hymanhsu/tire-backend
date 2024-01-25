@@ -1,5 +1,8 @@
 import express, { Express, Request, Response } from "express"
-import { signup, login, check_token, logout, LoginResult, LoginAsUserResult, loginAsUser, loginProceedAsUser } from "@App/service/auth_service"
+import {
+    signup, login, check_token, logout, LoginResult, LoginAsUserResult,
+    loginAsUser, loginProceedAsUser
+} from "@App/service/auth_service"
 import { LoginSession, RoleOption } from "@App/util/jwtoken";
 
 export const authRouter = express.Router();
@@ -64,14 +67,14 @@ authRouter.post("/loginAsUser", async (req: Request, res: Response) => {
     const loginRequest = req.body as LoginRequest;
     loginAsUser(loginRequest.login_name, loginRequest.password, userAgent)
         .then((loginResult: LoginAsUserResult) => {
-            if(loginResult.roleOptions == undefined){
+            if (loginResult.roleOptions == undefined) {
                 res.json(
                     {
                         meta: { status: true, message: "ok" },
                         data: { token: loginResult.token, session: loginResult.loginSession }
                     }
                 );
-            }else{
+            } else {
                 res.json(
                     {
                         meta: { status: true, message: "ok" },

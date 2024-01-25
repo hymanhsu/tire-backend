@@ -122,9 +122,11 @@ model u_base_roles {
   u_at    DateTime? @default(now()) @db.Timestamptz(6)
 }
 
-model categories {
+model p_categories {
   id                 String    @id @db.Char(3)
   parent_category_id String?   @db.Char(3)
+  level              Int?      @default(1)
+  priority           Int?      @default(0)
   title              String?   @db.VarChar(50)
   introduction       String?   @default("") @db.VarChar(200)
   invalid            Boolean?  @default(false)

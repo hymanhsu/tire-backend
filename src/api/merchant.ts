@@ -1,7 +1,12 @@
 import express, { Express, Request, Response } from "express"
 import { checkAuthToken, LoginSession } from "@App/util/jwtoken"
-import { NormalCreateDeleteRequest, ROLES_WITH_AMDIN, allowByRole } from "@App/util/constants";
-import { add_member_to_workshop, add_merchant, add_workshop, find_all_merchant_owners, find_members_by_merchant, find_members_by_workshop, find_merchant_by_id, find_merchants, find_workshop_by_id, find_workshops_by_merchant, remove_member_from_workshop, remove_merchant, remove_workshop } from "@App/dao/merchant_dao";
+import { NormalCreateDeleteRequest } from "@App/util/constants";
+import {
+    add_member_to_workshop, add_merchant, add_workshop, find_all_merchant_owners,
+    find_members_by_merchant, find_members_by_workshop, find_merchant_by_id, find_merchants,
+    find_workshop_by_id, find_workshops_by_merchant, remove_member_from_workshop, remove_merchant,
+    remove_workshop
+} from "@App/dao/merchant_dao";
 
 export const merchantRouter = express.Router();
 
@@ -29,13 +34,13 @@ merchantRouter.post("/add", checkAuthToken, async (req: Request, res: Response) 
         return;
     }
     const addMerchantRequest = req.body as AddMerchantRequest;
-    add_merchant(addMerchantRequest.nation, addMerchantRequest.province, addMerchantRequest.city, addMerchantRequest.merchant_sn, addMerchantRequest.merchant_name, 
+    add_merchant(addMerchantRequest.nation, addMerchantRequest.province, addMerchantRequest.city, addMerchantRequest.merchant_sn, addMerchantRequest.merchant_name,
         addMerchantRequest.introduction, addMerchantRequest.website_url, addMerchantRequest.address, addMerchantRequest.phone_number)
         .then((id) => {
             res.json(
                 {
                     meta: { status: true, message: "ok" },
-                    data: { id : id}
+                    data: { id: id }
                 }
             );
         })
@@ -202,13 +207,13 @@ merchantRouter.post("/queryAllOwners", checkAuthToken, async (req: Request, res:
 });
 
 type AddWorkshopRequest = {
-    merchant_id: string, 
-    workshop_sn: string, 
-    workshop_name: string, 
+    merchant_id: string,
+    workshop_sn: string,
+    workshop_name: string,
     introduction: string,
-    address: string, 
-    phone_number: string, 
-    latitude: string, 
+    address: string,
+    phone_number: string,
+    latitude: string,
     longitude: string
 };
 
@@ -223,13 +228,13 @@ merchantRouter.post("/addWorkshop", checkAuthToken, async (req: Request, res: Re
         return;
     }
     const addWorkshopRequest = req.body as AddWorkshopRequest;
-    add_workshop(addWorkshopRequest.merchant_id, addWorkshopRequest.workshop_sn, addWorkshopRequest.workshop_name, addWorkshopRequest.introduction, 
+    add_workshop(addWorkshopRequest.merchant_id, addWorkshopRequest.workshop_sn, addWorkshopRequest.workshop_name, addWorkshopRequest.introduction,
         addWorkshopRequest.address, addWorkshopRequest.phone_number, addWorkshopRequest.latitude, addWorkshopRequest.longitude)
         .then((id) => {
             res.json(
                 {
                     meta: { status: true, message: "ok" },
-                    data: { id : id}
+                    data: { id: id }
                 }
             );
         })
@@ -397,7 +402,7 @@ merchantRouter.post("/addWorkshopMember", checkAuthToken, async (req: Request, r
         return;
     }
     const addRemoveWorkshopMemberRequest = req.body as AddRemoveWorkshopMemberRequest;
-    add_member_to_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id, 
+    add_member_to_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id,
         addRemoveWorkshopMemberRequest.user_id, addRemoveWorkshopMemberRequest.role)
         .then(() => {
             res.json(
@@ -428,7 +433,7 @@ merchantRouter.post("/removeWorkshopMember", checkAuthToken, async (req: Request
         return;
     }
     const addRemoveWorkshopMemberRequest = req.body as AddRemoveWorkshopMemberRequest;
-    remove_member_from_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id, 
+    remove_member_from_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id,
         addRemoveWorkshopMemberRequest.user_id, addRemoveWorkshopMemberRequest.role)
         .then(() => {
             res.json(

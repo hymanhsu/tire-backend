@@ -7,9 +7,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morganBody from 'morgan-body';
 import { heloRouter } from '@App/api/helo/helo1';
-import { authRouter } from '@App/api/user/auth';
-import { userRouter } from '@App/api/user/user';
-import { merchantRouter } from '@App/api/user/merchant';
+import { authRouter } from '@App/api/auth';
+import { userRouter } from '@App/api/user';
+import { merchantRouter } from '@App/api/merchant';
+import { categoryRouter } from '@App/api/category';
 
 // load .env
 let envFile = '.env';
@@ -48,6 +49,7 @@ app.use("/api/helo", heloRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/merchant", merchantRouter);
+app.use("/api/category", categoryRouter);
 
 const port = process.env.PORT || 3000;
 

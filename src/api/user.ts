@@ -1,5 +1,8 @@
 import express, { Express, Request, Response } from "express"
-import { create_administrator, create_merchant_owner, create_workshop_manager, create_workshop_staff, query_userinfo } from "@App/service/user_service"
+import {
+    create_administrator, create_merchant_owner, create_workshop_manager,
+    create_workshop_staff, query_userinfo
+} from "@App/service/user_service"
 import { checkAuthToken, LoginSession } from "@App/util/jwtoken"
 import { NormalCreateDeleteRequest, ROLES_WITH_AMDIN, allowByRole } from "@App/util/constants";
 import { find_all_administrators, remove_user } from "@App/dao/user_dao";
@@ -39,11 +42,11 @@ userRouter.get("/userinfo", checkAuthToken, async (req: Request, res: Response) 
 
 
 type CreateUserRequest = {
-    nick_name:string, 
-    phone_number:string, 
-    email:string, 
-    login_name:string, 
-    password:string
+    nick_name: string,
+    phone_number: string,
+    email: string,
+    login_name: string,
+    password: string
 };
 
 userRouter.post("/addAdministrator", checkAuthToken, async (req: Request, res: Response) => {
@@ -57,7 +60,7 @@ userRouter.post("/addAdministrator", checkAuthToken, async (req: Request, res: R
         return;
     }
     const createUserRequest = req.body as CreateUserRequest;
-    create_administrator(createUserRequest.nick_name, createUserRequest.phone_number, 
+    create_administrator(createUserRequest.nick_name, createUserRequest.phone_number,
         createUserRequest.email, createUserRequest.login_name, createUserRequest.password)
         .then((userId) => {
             res.json(
@@ -137,12 +140,12 @@ userRouter.post("/deleteUser", checkAuthToken, async (req: Request, res: Respons
 });
 
 type CreateMerchantUserRequest = {
-    merchant_id:string,
-    nick_name:string, 
-    phone_number:string, 
-    email:string, 
-    login_name:string, 
-    password:string
+    merchant_id: string,
+    nick_name: string,
+    phone_number: string,
+    email: string,
+    login_name: string,
+    password: string
 };
 
 userRouter.post("/addMerchantOwner", checkAuthToken, async (req: Request, res: Response) => {
@@ -156,7 +159,7 @@ userRouter.post("/addMerchantOwner", checkAuthToken, async (req: Request, res: R
         return;
     }
     const createUserRequest = req.body as CreateMerchantUserRequest;
-    create_merchant_owner(createUserRequest.merchant_id,createUserRequest.nick_name, createUserRequest.phone_number, 
+    create_merchant_owner(createUserRequest.merchant_id, createUserRequest.nick_name, createUserRequest.phone_number,
         createUserRequest.email, createUserRequest.login_name, createUserRequest.password)
         .then((userId) => {
             res.json(
@@ -187,7 +190,7 @@ userRouter.post("/addWorkshopManager", checkAuthToken, async (req: Request, res:
         return;
     }
     const createUserRequest = req.body as CreateMerchantUserRequest;
-    create_workshop_manager(createUserRequest.merchant_id, createUserRequest.nick_name, createUserRequest.phone_number, 
+    create_workshop_manager(createUserRequest.merchant_id, createUserRequest.nick_name, createUserRequest.phone_number,
         createUserRequest.email, createUserRequest.login_name, createUserRequest.password)
         .then((userId) => {
             res.json(
@@ -196,7 +199,7 @@ userRouter.post("/addWorkshopManager", checkAuthToken, async (req: Request, res:
                     data: { user_id: userId }
                 }
             );
-        }) 
+        })
         .catch((err) => {
             res.json(
                 {
@@ -218,7 +221,7 @@ userRouter.post("/addWorkshopStaff", checkAuthToken, async (req: Request, res: R
         return;
     }
     const createUserRequest = req.body as CreateMerchantUserRequest;
-    create_workshop_staff(createUserRequest.merchant_id, createUserRequest.nick_name, createUserRequest.phone_number, 
+    create_workshop_staff(createUserRequest.merchant_id, createUserRequest.nick_name, createUserRequest.phone_number,
         createUserRequest.email, createUserRequest.login_name, createUserRequest.password)
         .then((userId) => {
             res.json(

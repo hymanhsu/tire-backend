@@ -2,7 +2,10 @@
  * Merchant DAO
  */
 import { prisma } from '@App/util/dbwrapper';
-import { FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant, FailToDeleteWorkshop, NotFoundMerchant, NotFoundMerchantWorkshop, NotFoundUserRecord, NotFoundWorkshop } from '@App/util/errcode';
+import {
+    FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant,
+    FailToDeleteWorkshop, NotFoundMerchant, NotFoundUserRecord, NotFoundWorkshop
+} from '@App/util/errcode';
 import { generate_id } from '@App/util/genid';
 import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
 
@@ -91,7 +94,7 @@ export async function find_merchant_by_id(merchantId: string): Promise<merchants
 export async function find_merchants(): Promise<merchants[]> {
     try {
         const merchants: merchants[] = await prisma.merchants.findMany({
-            orderBy: {c_at: 'desc'}
+            orderBy: { c_at: 'desc' }
         });
         return Promise.resolve(merchants);
     } catch (error) {
@@ -110,8 +113,8 @@ export async function find_all_merchant_owners(merchantId: string): Promise<u_us
         const userInfos: u_users[] = await prisma.$queryRawUnsafe(
             'SELECT u.*  FROM u_users u, merchant_members mm ' +
             'WHERE u.id = mm.user_id  ' +
-            'AND mm.role = \'MERT\' '+
-            'AND mm.merchant_id = $1 '+
+            'AND mm.role = \'MERT\' ' +
+            'AND mm.merchant_id = $1 ' +
             'ORDER BY u.c_at DESC',
             merchantId
         );
@@ -285,7 +288,7 @@ export async function add_member_to_workshop(merchantId: string, workshopId: str
                 role: role,
             }
         });
-        if(member != null){
+        if (member != null) {
             // have defined before
             return Promise.resolve();
         }
@@ -316,7 +319,7 @@ export async function remove_member_from_workshop(merchantId: string, workshopId
                 role: role,
             }
         });
-        if(member == null){
+        if (member == null) {
             // have not defined before
             return Promise.resolve();
         }
