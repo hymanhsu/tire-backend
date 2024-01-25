@@ -10,7 +10,9 @@ import { heloRouter } from '@App/api/helo/helo1';
 import { authRouter } from '@App/api/auth';
 import { userRouter } from '@App/api/user';
 import { merchantRouter } from '@App/api/merchant';
+import { workshopRouter } from '@App/api/workshop';
 import { categoryRouter } from '@App/api/category';
+import { brandRouter } from '@App/api/brand';
 
 // load .env
 let envFile = '.env';
@@ -49,7 +51,9 @@ app.use("/api/helo", heloRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/merchant", merchantRouter);
+app.use("/api/merchant", workshopRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/brand", brandRouter);
 
 const port = process.env.PORT || 3000;
 

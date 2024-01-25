@@ -8,21 +8,9 @@ import {
     remove_workshop
 } from "@App/dao/merchant_dao";
 
-export const merchantRouter = express.Router();
+export const workshopRouter = express.Router();
 
-type AddMerchantRequest = {
-    nation: string
-    province: string
-    city: string
-    merchant_sn: string
-    merchant_name: string
-    introduction: string
-    website_url: string
-    address: string
-    phone_number: string
-};
-
-merchantRouter.post("/add", checkAuthToken, async (req: Request, res: Response) => {
+workshopRouter.post("/queryOneWorkshop", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -32,9 +20,51 @@ merchantRouter.post("/add", checkAuthToken, async (req: Request, res: Response) 
         );
         return;
     }
-    const addMerchantRequest = req.body as AddMerchantRequest;
-    add_merchant(addMerchantRequest.nation, addMerchantRequest.province, addMerchantRequest.city, addMerchantRequest.merchant_sn, addMerchantRequest.merchant_name,
-        addMerchantRequest.introduction, addMerchantRequest.website_url, addMerchantRequest.address, addMerchantRequest.phone_number)
+    const normalCreateDeleteRequest = req.body as NormalCreateDeleteRequest;
+    find_workshop_by_id(normalCreateDeleteRequest.id)
+        .then((workshop) => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: workshop
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
+
+
+type AddWorkshopRequest = {
+    merchant_id: string,
+    workshop_sn: string,
+    workshop_name: string,
+    introduction: string,
+    address: string,
+    phone_number: string,
+    latitude: string,
+    longitude: string
+};
+
+workshopRouter.post("/addWorkshop", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const addWorkshopRequest = req.body as AddWorkshopRequest;
+    add_workshop(addWorkshopRequest.merchant_id, addWorkshopRequest.workshop_sn, addWorkshopRequest.workshop_name, addWorkshopRequest.introduction,
+        addWorkshopRequest.address, addWorkshopRequest.phone_number, addWorkshopRequest.latitude, addWorkshopRequest.longitude)
         .then((id) => {
             res.json(
                 {
@@ -54,7 +84,7 @@ merchantRouter.post("/add", checkAuthToken, async (req: Request, res: Response) 
 });
 
 
-merchantRouter.post("/remove", checkAuthToken, async (req: Request, res: Response) => {
+workshopRouter.post("/removeWorkshop", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -65,7 +95,7 @@ merchantRouter.post("/remove", checkAuthToken, async (req: Request, res: Respons
         return;
     }
     const normalCreateDeleteRequest = req.body as NormalCreateDeleteRequest;
-    remove_merchant(normalCreateDeleteRequest.id)
+    remove_workshop(normalCreateDeleteRequest.id)
         .then(() => {
             res.json(
                 {
@@ -85,7 +115,11 @@ merchantRouter.post("/remove", checkAuthToken, async (req: Request, res: Respons
 });
 
 
-merchantRouter.post("/queryOne", checkAuthToken, async (req: Request, res: Response) => {
+type QueryAllWorkshopsRequest = {
+    merchant_id: string,
+};
+
+workshopRouter.post("/queryAllWorkshops", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -95,13 +129,13 @@ merchantRouter.post("/queryOne", checkAuthToken, async (req: Request, res: Respo
         );
         return;
     }
-    const normalCreateDeleteRequest = req.body as NormalCreateDeleteRequest;
-    find_merchant_by_id(normalCreateDeleteRequest.id)
-        .then((merchant) => {
+    const queryAllWorkshopsRequest = req.body as QueryAllWorkshopsRequest;
+    find_workshops_by_merchant(queryAllWorkshopsRequest.merchant_id)
+        .then((list) => {
             res.json(
                 {
                     meta: { status: true, message: "ok" },
-                    data: merchant
+                    data: list
                 }
             );
         })
@@ -116,72 +150,12 @@ merchantRouter.post("/queryOne", checkAuthToken, async (req: Request, res: Respo
 });
 
 
-merchantRouter.get("/queryAll", checkAuthToken, async (req: Request, res: Response) => {
-    if (req.loginSession == undefined) {
-        res.json(
-            {
-                meta: { status: false, message: "Current user have not login!" },
-                data: {}
-            }
-        );
-        return;
-    }
-    find_merchants()
-        .then((list) => {
-            res.json(
-                {
-                    meta: { status: true, message: "ok" },
-                    data: list
-                }
-            );
-        })
-        .catch((err) => {
-            res.json(
-                {
-                    meta: { status: false, message: err.message },
-                    data: []
-                }
-            );
-        });
-});
-
-
-merchantRouter.post("/queryAllOwners", checkAuthToken, async (req: Request, res: Response) => {
-    if (req.loginSession == undefined) {
-        res.json(
-            {
-                meta: { status: false, message: "Current user have not login!" },
-                data: {}
-            }
-        );
-        return;
-    }
-    const normalCreateDeleteRequest = req.body as NormalCreateDeleteRequest;
-    find_all_merchant_owners(normalCreateDeleteRequest.id)
-        .then((list) => {
-            res.json(
-                {
-                    meta: { status: true, message: "ok" },
-                    data: list
-                }
-            );
-        })
-        .catch((err) => {
-            res.json(
-                {
-                    meta: { status: false, message: err.message },
-                    data: []
-                }
-            );
-        });
-});
-
-
-type QueryMembersRequest = {
-    merchant_id: string
+type QueryWorkshopMembersRequest = {
+    merchant_id: string,
+    workshop_id: string,
 };
 
-merchantRouter.post("/queryMembers", checkAuthToken, async (req: Request, res: Response) => {
+workshopRouter.post("/queryWorkshopMembers", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
         res.json(
             {
@@ -191,8 +165,8 @@ merchantRouter.post("/queryMembers", checkAuthToken, async (req: Request, res: R
         );
         return;
     }
-    const queryMembersRequest = req.body as QueryMembersRequest;
-    find_members_by_merchant(queryMembersRequest.merchant_id)
+    const queryWorkshopMembersRequest = req.body as QueryWorkshopMembersRequest;
+    find_members_by_workshop(queryWorkshopMembersRequest.merchant_id, queryWorkshopMembersRequest.workshop_id)
         .then((users) => {
             res.json(
                 {
@@ -211,4 +185,74 @@ merchantRouter.post("/queryMembers", checkAuthToken, async (req: Request, res: R
         });
 });
 
+
+type AddRemoveWorkshopMemberRequest = {
+    merchant_id: string,
+    workshop_id: string,
+    user_id: string,
+    role: string,
+};
+
+workshopRouter.post("/addWorkshopMember", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const addRemoveWorkshopMemberRequest = req.body as AddRemoveWorkshopMemberRequest;
+    add_member_to_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id,
+        addRemoveWorkshopMemberRequest.user_id, addRemoveWorkshopMemberRequest.role)
+        .then(() => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: {}
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
+
+
+workshopRouter.post("/removeWorkshopMember", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const addRemoveWorkshopMemberRequest = req.body as AddRemoveWorkshopMemberRequest;
+    remove_member_from_workshop(addRemoveWorkshopMemberRequest.merchant_id, addRemoveWorkshopMemberRequest.workshop_id,
+        addRemoveWorkshopMemberRequest.user_id, addRemoveWorkshopMemberRequest.role)
+        .then(() => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: {}
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
 

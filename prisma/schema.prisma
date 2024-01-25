@@ -128,8 +128,19 @@ model p_categories {
   level              Int?      @default(1)
   priority           Int?      @default(0)
   title              String?   @db.VarChar(50)
-  introduction       String?   @default("") @db.VarChar(200)
+  introduction       String?   @db.VarChar(200)
   invalid            Boolean?  @default(false)
   c_at               DateTime? @default(now()) @db.Timestamptz(6)
   u_at               DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model p_brands {
+  id           String    @id @db.Char(5)
+  brand        String    @db.VarChar(50)
+  grade        Int?      @default(1)
+  holder       String?   @db.VarChar(100)
+  introduction String?   @db.VarChar(200)
+  invalid      Boolean?  @default(false)
+  c_at         DateTime? @default(now()) @db.Timestamptz(6)
+  u_at         DateTime? @default(now()) @db.Timestamptz(6)
 }

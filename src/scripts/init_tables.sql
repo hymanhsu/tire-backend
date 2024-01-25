@@ -234,7 +234,7 @@ CREATE TABLE p_categories (
     -- priority value : 0, 1000, 2000, ...
     title VARCHAR(50),
     -- title
-    introduction VARCHAR(200) DEFAULT '',
+    introduction VARCHAR(200),
     -- introduction
     invalid BOOLEAN default FALSE,
     -- invalid = true, means data is invalid
@@ -247,16 +247,14 @@ DROP TABLE IF EXISTS p_brands;
 
 CREATE TABLE p_brands (
     id CHAR(5) PRIMARY KEY,
-    -- id, format : xddd,  xx rules as the following
-    -- 1 : Premium , 2 : Mid-range , 
-    -- 3|4|5 : Economy | 6,7,8,9 : Budget
+    -- id, by nano
     brand VARCHAR(50) NOT NULL,
     -- name of maker, such as Michelin
-    grade CHAR(1) DEFAULT '1',
-    -- 1: Premium, 2: Mid-range, 3: Economy, 6: Budget
-    owner VARCHAR(100) DEFAULT '',
+    grade INTEGER DEFAULT 1,
+    -- 1: Premium, 2: Mid-range, 3: Economy, 4: Budget
+    holder VARCHAR(100),
     -- the company that owns the brand
-    introduction VARCHAR(200) DEFAULT '',
+    introduction VARCHAR(200),
     -- introduction of the brand
     invalid BOOLEAN default FALSE,
     -- invalid = true, means data is invalid

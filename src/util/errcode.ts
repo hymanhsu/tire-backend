@@ -49,3 +49,7 @@ export const NotFoundCategories = new CError(101002, 'NotFoundCategories', 'Not 
 export const ExceedCategoryMaxLevel = new CError(101002, 'ExceedCategoryMaxLevel', 'Exceed the max level of category!');
 export const CannotRemoveCategoryWithChildren = new CError(101002, 'CannotRemoveCategoryWithChildren', 'Cannot remove the category with children!');
 
+export const FailToCreateBrand = new CError(101001, 'FailToCreateBrand', 'Fail to create brand record!');
+export const FailToDeleteBrand = new CError(101001, 'FailToDeleteBrand', 'Fail to delete brand record!');
+
+

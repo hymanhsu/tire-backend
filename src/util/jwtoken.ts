@@ -5,7 +5,8 @@ export type RoleOption = {
     role: string;
     merchant_id: string;
     merchant_name: string;
-    workshop_id: string; // maybe empty
+    workshop_id: string | null; // maybe empty
+    workshop_name: string | null; // maybe empty
 };
 
 export type LoginSession = {

@@ -2,9 +2,12 @@
  * Product DAO
  */
 import { prisma } from '@App/util/dbwrapper';
-import { CannotRemoveCategoryWithChildren, ExceedCategoryMaxLevel, FailToCreateCategory, FailToDeleteCategory, NotFoundCategories } from '@App/util/errcode';
+import {
+    CannotRemoveCategoryWithChildren, ExceedCategoryMaxLevel, FailToCreateBrand,
+    FailToCreateCategory, FailToDeleteBrand, FailToDeleteCategory, NotFoundCategories
+} from '@App/util/errcode';
 import { generate_pretty_id } from '@App/util/genid';
-import { p_categories } from '@prisma/client';
+import { p_categories, p_brands } from '@prisma/client';
 
 
 export type p_categories_tree_node = {
@@ -143,14 +146,15 @@ export async function add_category(level: number, priority: number, title: strin
  */
 export async function remove_category(categoryId: string): Promise<void> {
     try {
-        const childrenCategories : p_categories[] = await prisma.p_categories.findMany({
+        const childrenCategories: p_categories[] = await prisma.p_categories.findMany({
             where: {
                 parent_category_id: categoryId,
             }
         });
-        if(childrenCategories.length > 0){
+        if (childrenCategories.length > 0) {
             return Promise.reject(CannotRemoveCategoryWithChildren);
         }
+        //TODO: need to check if category has been used in the p_products
         await prisma.p_categories.delete({
             where: {
                 id: categoryId,
@@ -160,6 +164,58 @@ export async function remove_category(categoryId: string): Promise<void> {
     } catch (error) {
         console.error(error);
         return Promise.reject(FailToDeleteCategory);
+    }
+}
+
+
+export async function find_all_brands(): Promise<p_brands[]> {
+    try {
+        const brands: p_brands[] = await prisma.p_brands.findMany({
+            orderBy: [
+                { brand: 'asc' },
+                { c_at: 'desc' },
+            ]
+        });
+        return Promise.resolve(brands);
+    } catch (error) {
+        console.error(error);
+        return Promise.resolve([]);
+    }
+}
+
+
+export async function add_brand(brand: string, grade: number, holder: string,
+    introduction: string): Promise<string> {
+    try {
+        const created = await prisma.p_brands.create({
+            data: {
+                id: generate_pretty_id(5),
+                brand: brand,
+                grade: grade,
+                holder: holder,
+                introduction: introduction,
+            }
+        });
+        return Promise.resolve(created.id);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToCreateBrand);
+    }
+}
+
+
+export async function remove_brand(brandId: string): Promise<void> {
+    //TODO: need to check if category has been used in the p_products
+    try {
+        await prisma.p_brands.delete({
+            where: {
+                id: brandId,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToDeleteBrand);
     }
 }
 
