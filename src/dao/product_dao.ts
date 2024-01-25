@@ -7,8 +7,13 @@ import { generate_pretty_id } from '@App/util/genid';
 import { p_categories } from '@prisma/client';
 
 
-export type p_categories_tree_node = p_categories & {
-    children?: p_categories_tree_node[]
+export type p_categories_tree_node = {
+    id: string,
+    parent: string | null,
+    label: string | null,
+    priority: number | null,
+    level: number | null,
+    nodes?: p_categories_tree_node[]
 };
 
 /**
@@ -46,28 +51,48 @@ export async function find_all_categories(): Promise<p_categories_tree_node[]> {
                 const thirdLevelResult: p_categories_tree_node[] = [];
                 for (const thirdEle of thirdLevels) {
                     thirdLevelResult.push({
-                        ...thirdEle,
+                        id: thirdEle.id,
+                        parent: thirdEle.parent_category_id,
+                        label: thirdEle.title,
+                        priority: thirdEle.priority,
+                        level: thirdEle.level,
                     });
                 }
                 if (thirdLevelResult.length == 0) {
                     secondLevelResult.push({
-                        ...secondEle,
+                        id: secondEle.id,
+                        parent: secondEle.parent_category_id,
+                        label: secondEle.title,
+                        priority: secondEle.priority,
+                        level: secondEle.level,
                     });
                 } else {
                     secondLevelResult.push({
-                        ...secondEle,
-                        children: thirdLevelResult,
+                        id: secondEle.id,
+                        parent: secondEle.parent_category_id,
+                        label: secondEle.title,
+                        priority: secondEle.priority,
+                        level: secondEle.level,
+                        nodes: thirdLevelResult,
                     });
                 }
             }
             if (secondLevelResult.length == 0) {
                 firstLevelResult.push({
-                    ...ele,
+                    id: ele.id,
+                    parent: ele.parent_category_id,
+                    label: ele.title,
+                    priority: ele.priority,
+                    level: ele.level,
                 });
             } else {
                 firstLevelResult.push({
-                    ...ele,
-                    children: secondLevelResult,
+                    id: ele.id,
+                    parent: ele.parent_category_id,
+                    label: ele.title,
+                    priority: ele.priority,
+                    level: ele.level,
+                    nodes: secondLevelResult,
                 });
             }
         }
