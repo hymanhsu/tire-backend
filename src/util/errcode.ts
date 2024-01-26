@@ -52,4 +52,8 @@ export const CannotRemoveCategoryWithChildren = new CError(101002, 'CannotRemove
 export const FailToCreateBrand = new CError(101001, 'FailToCreateBrand', 'Fail to create brand record!');
 export const FailToDeleteBrand = new CError(101001, 'FailToDeleteBrand', 'Fail to delete brand record!');
 
+export const FailToCreateAttrTemplate = new CError(101001, 'FailToCreateAttrTemplate', 'Fail to create attribute template record!');
+export const FailToDeleteAttrTemplate = new CError(101001, 'FailToDeleteAttrTemplate', 'Fail to delete attribute template record!');
+export const FailToCreateAttrTemplateDetail = new CError(101001, 'FailToCreateAttrTemplateDetail', 'Fail to create attribute template detail record!');
+export const FailToDeleteAttrTemplateDetail = new CError(101001, 'FailToDeleteAttrTemplateDetail', 'Fail to delete attribute template detail record!');
 

@@ -56,3 +56,7 @@ export const allowByRole = (role:string, allows:string[]):boolean => {
 export type NormalCreateDeleteRequest = {
     id: string
 };
+
+export type BasicMerchantRequest = {
+    merchant_id: string
+};
