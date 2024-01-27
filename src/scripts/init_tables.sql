@@ -303,6 +303,9 @@ CREATE TABLE p_attr_template_details (
     u_at TIMESTAMPTZ DEFAULT now()
 );
 
+DROP INDEX IF EXISTS UNIQUE_ATTR_TEMPLATE_DETAILS;
+CREATE UNIQUE INDEX UNIQUE_ATTR_TEMPLATE_DETAILS ON p_attr_template_details (attr_templ_id, attr_name);
+
 -- SPU defines of products
 DROP TABLE IF EXISTS p_products;
 

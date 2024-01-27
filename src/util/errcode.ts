@@ -56,4 +56,5 @@ export const FailToCreateAttrTemplate = new CError(101001, 'FailToCreateAttrTemp
 export const FailToDeleteAttrTemplate = new CError(101001, 'FailToDeleteAttrTemplate', 'Fail to delete attribute template record!');
 export const FailToCreateAttrTemplateDetail = new CError(101001, 'FailToCreateAttrTemplateDetail', 'Fail to create attribute template detail record!');
 export const FailToDeleteAttrTemplateDetail = new CError(101001, 'FailToDeleteAttrTemplateDetail', 'Fail to delete attribute template detail record!');
+export const DuplicatedAttrTemplateDetail = new CError(101002, 'DuplicatedAttrTemplateDetail', 'You can not redefine the same attribute!');
 

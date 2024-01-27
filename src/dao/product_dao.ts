@@ -3,7 +3,7 @@
  */
 import { prisma } from '@App/util/dbwrapper';
 import {
-    CannotRemoveCategoryWithChildren, ExceedCategoryMaxLevel, FailToCreateAttrTemplate, FailToCreateBrand,
+    CannotRemoveCategoryWithChildren, DuplicatedAttrTemplateDetail, ExceedCategoryMaxLevel, FailToCreateAttrTemplate, FailToCreateBrand,
     FailToCreateCategory, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, NotFoundCategories
 } from '@App/util/errcode';
 import { generate_id, generate_pretty_id } from '@App/util/genid';
@@ -322,6 +322,15 @@ export async function add_attr_template(merchantId: string, templateName: string
 export async function add_attr_template_detail(attrTemplId: string, attrName: string, attrType: string,
     paramName: string, title: string, description: string): Promise<string> {
     try {
+        const details: p_attr_template_details| null = await prisma.p_attr_template_details.findFirst({
+            where: {
+                attr_templ_id : attrTemplId,
+                attr_name : attrName,
+            },
+        });
+        if(details != null){
+            return Promise.reject(DuplicatedAttrTemplateDetail);
+        }
         const created = await prisma.p_attr_template_details.create({
             data: {
                 id: generate_id(),
