@@ -14,6 +14,8 @@ import { workshopRouter } from '@App/api/workshop';
 import { categoryRouter } from '@App/api/category';
 import { brandRouter } from '@App/api/brand';
 import { productAttrRouter } from '@App/api/product_attr';
+import { productRouter } from '@App/api/product';
+
 
 // load .env
 let envFile = '.env';
@@ -56,6 +58,7 @@ app.use("/api/merchant", workshopRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/product", productAttrRouter);
+app.use("/api/product", productRouter);
 
 
 const port = process.env.PORT || 3000;

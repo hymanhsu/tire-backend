@@ -306,6 +306,7 @@ CREATE TABLE p_attr_template_details (
 DROP INDEX IF EXISTS UNIQUE_ATTR_TEMPLATE_DETAILS;
 CREATE UNIQUE INDEX UNIQUE_ATTR_TEMPLATE_DETAILS ON p_attr_template_details (attr_templ_id, attr_name);
 
+
 -- SPU defines of products
 DROP TABLE IF EXISTS p_products;
 
@@ -325,7 +326,7 @@ CREATE TABLE p_products (
     status VARCHAR(20) DEFAULT 'INITIAL',
     -- status : INITIAL | ONLINE | OFFLINE
     title VARCHAR(100),
-    -- description
+    -- title
     description VARCHAR(500),
     -- description
     invalid BOOLEAN default FALSE,

@@ -60,3 +60,19 @@ export type NormalCreateDeleteRequest = {
 export type BasicMerchantRequest = {
     merchant_id: string
 };
+
+export type BasicChangeStatusRequest = {
+    id: string,
+    status: string,
+};
+
+/**
+ * Product status
+ */
+export const PRODUCT_INITIAL = "INITIAL";
+export const PRODUCT_ONLINE  = "ONLINE";
+export const PRODUCT_OFFLINE = "OFFLINE";
+
+
+
+

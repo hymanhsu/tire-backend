@@ -8,6 +8,9 @@ import {
 
 export const productAttrRouter = express.Router();
 
+type QueryAllAttrTemplatesRequest = BasicMerchantRequest & {
+    template_type : string | undefined
+}
 
 productAttrRouter.post("/queryAllAttrTemplates", checkAuthToken, async (req: Request, res: Response) => {
     if (req.loginSession == undefined) {
@@ -19,8 +22,8 @@ productAttrRouter.post("/queryAllAttrTemplates", checkAuthToken, async (req: Req
         );
         return;
     }
-    const basicMerchantRequest = req.body as BasicMerchantRequest;
-    find_all_attr_templates(basicMerchantRequest.merchant_id)
+    const queryAllAttrTemplatesRequest = req.body as QueryAllAttrTemplatesRequest;
+    find_all_attr_templates(queryAllAttrTemplatesRequest.merchant_id, queryAllAttrTemplatesRequest.template_type)
         .then((templates) => {
             res.json(
                 {

@@ -4,7 +4,7 @@
 import { prisma } from '@App/util/dbwrapper';
 import {
     CannotRemoveCategoryWithChildren, DuplicatedAttrTemplateDetail, ExceedCategoryMaxLevel, FailToCreateAttrTemplate, FailToCreateBrand,
-    FailToCreateCategory, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, NotFoundCategories
+    FailToCreateCategory, FailToCreateProduct, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, FailToDeleteProduct, FailToUpdateProduct, NotFoundCategories
 } from '@App/util/errcode';
 import { generate_id, generate_pretty_id } from '@App/util/genid';
 import {
@@ -259,16 +259,29 @@ export async function remove_brand(brandId: string): Promise<void> {
  * Find all attribute templates
  * @returns 
  */
-export async function find_all_attr_templates(merchantId: string): Promise<p_attr_templates[]> {
+export async function find_all_attr_templates(merchantId: string, type?: string): Promise<p_attr_templates[]> {
     try {
-        const templates: p_attr_templates[] = await prisma.p_attr_templates.findMany({
-            where: {
-                merchant_id : merchantId,
-            },
-            orderBy: [
-                { c_at: 'desc' },
-            ]
-        });
+        let templates: p_attr_templates[] = [];
+        if (type == undefined) {
+            templates = await prisma.p_attr_templates.findMany({
+                where: {
+                    merchant_id : merchantId,
+                },
+                orderBy: [
+                    { c_at: 'desc' },
+                ]
+            });
+        }else{
+            templates = await prisma.p_attr_templates.findMany({
+                where: {
+                    merchant_id : merchantId,
+                    template_type : type,
+                },
+                orderBy: [
+                    { c_at: 'desc' },
+                ]
+            });
+        }
         return Promise.resolve(templates);
     } catch (error) {
         console.error(error);
@@ -356,6 +369,15 @@ export async function add_attr_template_detail(attrTemplId: string, attrName: st
  */
 export async function remove_attr_template(templateId: string): Promise<void> {
     try {
+        //need to check if category has been used in the p_products
+        const products: p_products[] = await prisma.p_products.findMany({
+            where: {
+                attr_templ_id: templateId,
+            }
+        });
+        if(products.length > 0){
+            return Promise.reject(FailToDeleteAttrTemplate);
+        }
         return await prisma.$transaction(async (tx): Promise<void> => {
             // delete defines of attr template 
             const deleted = await tx.p_attr_template_details.deleteMany({
@@ -391,4 +413,83 @@ export async function remove_attr_template_detail(attrTemplDetailId: string): Pr
     }
 }
 
+export type p_products_ext = p_products & {
+    category_title: string,
+    brand: string | null,
+    attr_templ_title: string | null,
+};
+
+export async function find_all_products(merchantId: string): Promise<p_products_ext[]> {
+    try {
+        const products: p_products_ext[] = await prisma.$queryRawUnsafe(
+            'SELECT p.*, c.title as category_title, b.brand, at.template_name as attr_templ_title ' +
+            'FROM p_products p, p_categories c, p_brands b, p_attr_templates at ' +
+            'WHERE p.category_id = c.id AND p.brand_id = b.id AND p.attr_templ_id = at.id ' +
+            'AND p.invalid = FALSE AND p.merchant_id = $1 '+
+            'ORDER BY p.c_at DESC',
+            merchantId,
+        );
+        return Promise.resolve(products);
+    } catch (error) {
+        console.error(error);
+        return Promise.resolve([]);
+    }
+}
+
+
+export async function add_product(merchantId: string, spuName: string, categoryId: string, brandId: string, 
+    attrTemplId: string, title: string, description: string): Promise<string> {
+    try {
+        const created = await prisma.p_products.create({
+            data: {
+                id: generate_id(),
+                merchant_id: merchantId,
+                spu_name: spuName,
+                category_id: categoryId,
+                brand_id: brandId,
+                attr_templ_id: attrTemplId,
+                status: 'INITIAL',
+                title: title,
+                description: description,
+            }
+        });
+        return Promise.resolve(created.id);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToCreateProduct);
+    }
+}
+
+
+export async function remove_product(productId: string): Promise<void> {
+    try {
+        await prisma.p_products.delete({
+            where: {
+                id: productId,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToDeleteProduct);
+    }
+}
+
+
+export async function update_product_status(productId: string, status: string): Promise<void> {
+    try {
+        await prisma.p_products.update({
+            data: {
+                status: status,
+            },
+            where: {
+                id: productId,
+            }
+        });
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToUpdateProduct);
+    }
+}
 
