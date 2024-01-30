@@ -40,7 +40,7 @@ export interface BaseResponse {
     data: any,
 };
 
-export const ROLES_WITH_AMDIN = [ROLE_ROOT,ROLE_ADMN];
+export const ROLES_WITH_AMDIN = [ROLE_ROOT, ROLE_ADMN];
 
 /**
  * Judge if allow based on role
@@ -48,7 +48,7 @@ export const ROLES_WITH_AMDIN = [ROLE_ROOT,ROLE_ADMN];
  * @param allows 
  * @returns 
  */
-export const allowByRole = (role:string, allows:string[]):boolean => {
+export const allowByRole = (role: string, allows: string[]): boolean => {
     return allows.includes(role);
 }
 
@@ -66,11 +66,16 @@ export type BasicChangeStatusRequest = {
     status: string,
 };
 
+// https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
+export type GeneralObject = {
+    [key: string]: any | null;
+};
+
 /**
  * Product status
  */
 export const PRODUCT_INITIAL = "INITIAL";
-export const PRODUCT_ONLINE  = "ONLINE";
+export const PRODUCT_ONLINE = "ONLINE";
 export const PRODUCT_OFFLINE = "OFFLINE";
 
 

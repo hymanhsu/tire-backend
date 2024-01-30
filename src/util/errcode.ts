@@ -63,4 +63,6 @@ export const FailToCreateProduct = new CError(101001, 'FailToCreateProduct', 'Fa
 export const FailToDeleteProduct = new CError(101001, 'FailToDeleteProduct', 'Fail to delete product record!');
 export const FailToUpdateProduct = new CError(101001, 'FailToUpdateProduct', 'Fail to update product record!');
 
+export const FailToFindProductAttrs = new CError(101001, 'FailToFindProductAttrs', 'Fail to find product attributes!');
+export const FailToUpdateProductAttrs = new CError(101001, 'FailToUpdateProductAttrs', 'Fail to update product attributes!');
 

@@ -1,15 +1,16 @@
 /**
  * Product DAO
  */
+import { GeneralObject } from '@App/util/constants';
 import { prisma } from '@App/util/dbwrapper';
 import {
     CannotRemoveCategoryWithChildren, DuplicatedAttrTemplateDetail, ExceedCategoryMaxLevel, FailToCreateAttrTemplate, FailToCreateBrand,
-    FailToCreateCategory, FailToCreateProduct, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, FailToDeleteProduct, FailToUpdateProduct, NotFoundCategories
+    FailToCreateCategory, FailToCreateProduct, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, FailToDeleteProduct, FailToFindProductAttrs, FailToUpdateProduct, FailToUpdateProductAttrs, NotFoundCategories
 } from '@App/util/errcode';
 import { generate_id, generate_pretty_id } from '@App/util/genid';
 import {
     p_categories, p_brands,
-    p_attr_templates, p_attr_template_details, p_products
+    p_attr_templates, p_attr_template_details, p_products, p_product_attrs
 } from '@prisma/client';
 
 
@@ -440,20 +441,29 @@ export async function find_all_products(merchantId: string): Promise<p_products_
 export async function add_product(merchantId: string, spuName: string, categoryId: string, brandId: string, 
     attrTemplId: string, title: string, description: string): Promise<string> {
     try {
-        const created = await prisma.p_products.create({
-            data: {
-                id: generate_id(),
-                merchant_id: merchantId,
-                spu_name: spuName,
-                category_id: categoryId,
-                brand_id: brandId,
-                attr_templ_id: attrTemplId,
-                status: 'INITIAL',
-                title: title,
-                description: description,
-            }
+        return await prisma.$transaction(async (tx): Promise<string> => {
+            const created = await tx.p_products.create({
+                data: {
+                    id: generate_id(),
+                    merchant_id: merchantId,
+                    spu_name: spuName,
+                    category_id: categoryId,
+                    brand_id: brandId,
+                    attr_templ_id: attrTemplId,
+                    status: 'INITIAL',
+                    title: title,
+                    description: description,
+                }
+            });
+            // add new blank attributes record
+            await tx.p_product_attrs.create({
+                data: {
+                    id: generate_id(),
+                    product_id: created.id,
+                }
+            });
+            return Promise.resolve(created.id);
         });
-        return Promise.resolve(created.id);
     } catch (error) {
         console.error(error);
         return Promise.reject(FailToCreateProduct);
@@ -463,12 +473,20 @@ export async function add_product(merchantId: string, spuName: string, categoryI
 
 export async function remove_product(productId: string): Promise<void> {
     try {
-        await prisma.p_products.delete({
-            where: {
-                id: productId,
-            }
+        return await prisma.$transaction(async (tx): Promise<void> => {
+            await tx.p_products.delete({
+                where: {
+                    id: productId,
+                }
+            });
+            // delete attributes
+            await tx.p_product_attrs.deleteMany({
+                where: {
+                    product_id: productId,
+                }
+            });
+            return Promise.resolve();
         });
-        return Promise.resolve();
     } catch (error) {
         console.error(error);
         return Promise.reject(FailToDeleteProduct);
@@ -492,4 +510,156 @@ export async function update_product_status(productId: string, status: string): 
         return Promise.reject(FailToUpdateProduct);
     }
 }
+
+
+export type p_attr_template_details_ext = p_attr_template_details & {
+    attr_value: string | null,
+};
+
+export async function find_product_attrs(productId: string): Promise<p_attr_template_details_ext[]> {
+    try {
+        const attrsRecs: GeneralObject[] = await prisma.$queryRawUnsafe(
+            'SELECT * ' + 
+            'FROM p_product_attrs ' + 
+            'WHERE product_id = $1',
+            productId,
+        );
+        if(attrsRecs.length == 0){
+            return Promise.reject(FailToFindProductAttrs);
+        }
+        const attrs = attrsRecs[0];
+        // console.log(JSON.stringify(attrs));
+        // const attrsJson = JSON.stringify(attrs);
+        // const product_attrs = JSON.parse(attrsJson);
+        const templ_records: p_attr_template_details[] = await prisma.$queryRawUnsafe(
+            'SELECT ptd.* ' + 
+            'FROM p_products p, p_attr_template_details ptd ' + 
+            'WHERE p.id = $1 AND p.attr_templ_id = ptd.attr_templ_id ' +
+            'ORDER BY ptd.title ASC',
+            productId,
+        );
+        const result : p_attr_template_details_ext[] = [];
+        for(let i = 0; i < templ_records.length; i++){
+            const item = templ_records[i];
+            const attrName = item.attr_name as string;
+            const value : string | null = attrs[attrName];
+            result.push({
+                ...item,
+                attr_value: (value==null)?"":value,
+            });
+        }
+        return Promise.resolve(result);
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToFindProductAttrs);
+    }
+}
+
+
+export type p_product_attrs_simple = {
+    attr_short_01: string | undefined
+    attr_short_02: string | undefined
+    attr_short_03: string | undefined
+    attr_short_04: string | undefined
+    attr_short_05: string | undefined
+    attr_short_06: string | undefined
+    attr_short_07: string | undefined
+    attr_short_08: string | undefined
+    attr_short_09: string | undefined
+    attr_short_10: string | undefined
+    attr_short_11: string | undefined
+    attr_short_12: string | undefined
+    attr_short_13: string | undefined
+    attr_short_14: string | undefined
+    attr_short_15: string | undefined
+    attr_short_16: string | undefined
+    attr_short_17: string | undefined
+    attr_short_18: string | undefined
+    attr_short_19: string | undefined
+    attr_short_20: string | undefined
+    attr_medium_01: string | undefined
+    attr_medium_02: string | undefined
+    attr_medium_03: string | undefined
+    attr_medium_04: string | undefined
+    attr_medium_05: string | undefined
+    attr_medium_06: string | undefined
+    attr_medium_07: string | undefined
+    attr_medium_08: string | undefined
+    attr_medium_09: string | undefined
+    attr_medium_10: string | undefined
+    attr_long_01: string | undefined
+    attr_long_02: string | undefined
+    attr_long_03: string | undefined
+    attr_long_04: string | undefined
+    attr_long_05: string | undefined
+}
+
+export async function update_product_attrs(productId: string, attrs: p_product_attrs_simple): Promise<void> {
+    try {
+        let setSQL = "";
+        let setValues : string[]  = [];
+        let index = 1;
+        const attrsJson = JSON.stringify(attrs);
+        const product_attrs = JSON.parse(attrsJson);
+        const concatAttr = (attrName:string) => {
+            if(product_attrs[attrName] != undefined){
+                setSQL += attrName+"=$"+index+",";
+                setValues.push(product_attrs[attrName]);
+                index++;
+            }
+        }
+        concatAttr('attr_short_01');
+        concatAttr('attr_short_02');
+        concatAttr('attr_short_03');
+        concatAttr('attr_short_04');
+        concatAttr('attr_short_05');
+        concatAttr('attr_short_06');
+        concatAttr('attr_short_07');
+        concatAttr('attr_short_08');
+        concatAttr('attr_short_09');
+        concatAttr('attr_short_10');
+        concatAttr('attr_short_11');
+        concatAttr('attr_short_12');
+        concatAttr('attr_short_13');
+        concatAttr('attr_short_14');
+        concatAttr('attr_short_15');
+        concatAttr('attr_short_16');
+        concatAttr('attr_short_17');
+        concatAttr('attr_short_18');
+        concatAttr('attr_short_19');
+        concatAttr('attr_short_20');
+        concatAttr('attr_medium_01');
+        concatAttr('attr_medium_02');
+        concatAttr('attr_medium_03');
+        concatAttr('attr_medium_04');
+        concatAttr('attr_medium_05');
+        concatAttr('attr_medium_06');
+        concatAttr('attr_medium_07');
+        concatAttr('attr_medium_08');
+        concatAttr('attr_medium_09');
+        concatAttr('attr_medium_10');
+        concatAttr('attr_long_01');
+        concatAttr('attr_long_02');
+        concatAttr('attr_long_03');
+        concatAttr('attr_long_04');
+        concatAttr('attr_long_05');
+        if(setSQL == ""){
+            // DO NOTHING
+            return Promise.resolve();
+        }
+        if(setSQL.endsWith(",")){
+            setSQL = setSQL.substring(0, setSQL.length-1);
+        }
+        setValues.push(productId);
+        const sql = "UPDATE p_product_attrs SET " + setSQL + " WHERE product_id=$"+index;
+        // console.log(sql);
+        // console.log(JSON.stringify(setValues));
+        await prisma.$executeRawUnsafe(sql, ...setValues);
+        return Promise.resolve();
+    } catch (error) {
+        console.error(error);
+        return Promise.reject(FailToUpdateProductAttrs);
+    }
+}
+
 

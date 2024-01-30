@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express"
 import { checkAuthToken, LoginSession } from "@App/util/jwtoken";
 import { BasicChangeStatusRequest, BasicMerchantRequest, NormalCreateDeleteRequest } from "@App/util/constants";
 import {
-    find_all_products, add_product, remove_product, update_product_status,
+    find_all_products, add_product, remove_product, update_product_status, find_product_attrs, p_product_attrs_simple, update_product_attrs,
 } from "@App/dao/product_dao";
 
 export const productRouter = express.Router();
@@ -124,6 +124,76 @@ productRouter.post("/changeProductStatus", checkAuthToken, async (req: Request, 
     }
     const basicChangeStatusRequest = req.body as BasicChangeStatusRequest;
     update_product_status(basicChangeStatusRequest.id, basicChangeStatusRequest.status)
+        .then(() => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: {}
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: {}
+                }
+            );
+        });
+});
+
+
+type QueryProductAttrsRequest = {
+    product_id: string, 
+}
+
+productRouter.post("/queryProductAttrs", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const queryProductAttrsRequest = req.body as QueryProductAttrsRequest;
+    find_product_attrs(queryProductAttrsRequest.product_id)
+        .then((attrs) => {
+            res.json(
+                {
+                    meta: { status: true, message: "ok" },
+                    data: attrs
+                }
+            );
+        })
+        .catch((err) => {
+            res.json(
+                {
+                    meta: { status: false, message: err.message },
+                    data: []
+                }
+            );
+        });
+});
+
+
+type UpdateProductAttrsRequest = p_product_attrs_simple & {
+    product_id: string, 
+}
+
+productRouter.post("/updateProductAttrs", checkAuthToken, async (req: Request, res: Response) => {
+    if (req.loginSession == undefined) {
+        res.json(
+            {
+                meta: { status: false, message: "Current user have not login!" },
+                data: {}
+            }
+        );
+        return;
+    }
+    const updateProductAttrsRequest = req.body as UpdateProductAttrsRequest;
+    update_product_attrs(updateProductAttrsRequest.product_id, updateProductAttrsRequest)
         .then(() => {
             res.json(
                 {
