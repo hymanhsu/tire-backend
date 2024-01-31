@@ -1,7 +1,6 @@
 {
     "name": "tire-backend",
     "version": 2,
-    "framework": "express",
     "outputDirectory": "dist",
     "builds": [
         {
