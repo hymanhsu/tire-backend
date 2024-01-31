@@ -1,5 +1,4 @@
 {
-    "name": "tire-backend",
     "version": 2,
     "outputDirectory": "dist",
     "builds": [
