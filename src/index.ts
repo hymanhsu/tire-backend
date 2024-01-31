@@ -30,6 +30,7 @@ console.log("cwd="+cwd());
 dotenv.config({ path: envFile });
 
 const app: Express = express();
+const port = process.env.PORT || 3000;
 
 const filterByMorgan = (request: express.Request, response: express.Response):boolean => {
     const skipUris = ["/api/auth/check"];
@@ -42,7 +43,7 @@ const filterByMorgan = (request: express.Request, response: express.Response):bo
     return false;
 }
 
-// using the dependancies
+// set middlewares
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
@@ -54,7 +55,7 @@ if (process.env.NODE_ENV != 'production') {
     });
 }
 
-// setting routers
+// set routers
 app.use("/api/helo", heloRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
@@ -65,11 +66,8 @@ app.use("/api/brand", brandRouter);
 app.use("/api/product", productAttrRouter);
 app.use("/api/product", productRouter);
 
-
-const port = process.env.PORT || 3000;
-
 app.listen(port, () => {
-    console.log(`[server]: Server is listening at port ${port} with ${process.env.TZ}`);
+    console.log(`[server]: Server is listening on ${port} with ${process.env.TZ}`);
 });
 
 // Export the Express API (for vercel)
