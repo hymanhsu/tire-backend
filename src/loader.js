@@ -34,7 +34,7 @@ const baseURL = pathToFileURL(cwd() + '/').href;
 export async function resolve(specifier, context, next) {
   const { parentURL = baseURL } = context;
 
-  console.log("specifier="+specifier);
+  // console.log("specifier="+specifier);
 
   if (isBuiltin(specifier)) {
     return next(specifier, context);

@@ -45,6 +45,11 @@ Front-x Customer: return login reponse
 2, Everyone has a first-level role, which is set in the u_users with account's creating. 
 3, If the user is a merchant, he maybe
 
+
+## Deploy on Vercel
+
+https://dev.to/tirthpatel/deploy-node-ts-express-typescript-on-vercel-284h
+
 # Contact
 
 Hyman Hsu's email : hymanhsu8175@gmail.com
