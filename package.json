@@ -2,7 +2,7 @@
   "name": "tire-backend",
   "version": "1.0.0",
   "description": "Backend server for tire-demo",
-  "main": "./dist/index.js",
+  "main": "./dist/api/index.js",
   "scripts": {
     "pull_dbschema": "npx prisma db pull && npx prisma generate",
     "clean": "npx tsc --build --clean",
@@ -10,7 +10,7 @@
     "test": "dotenv -e .env.development -- npx jest --silent false --verbose true --collectCoverage",
     "build": "npx tsc -p tsconfig.build.json",
     "start": "cross-env NODE_ENV=production node --import ./dist/register.js .",
-    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts"
+    "dev": "cross-env NODE_ENV=development tsx watch src/api/index.ts"
   },
   "type": "module",
   "keywords": [],
