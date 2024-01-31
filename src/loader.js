@@ -21,6 +21,8 @@ import { dirname } from 'node:path';
 import { cwd } from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
 
 import resolveCallback from 'resolve/async.js';
 
@@ -38,8 +40,9 @@ export async function resolve(specifier, context, next) {
     return next(specifier, context);
   }
 
+  // console.log("baseURL="+baseURL);
   if (specifier.startsWith("@App")){
-    specifier = specifier.replace("@App",".");
+    specifier = specifier.replace("@App",baseURL+"dist");
   }
 
   // `resolveAsync` works with paths, not URLs
@@ -58,6 +61,7 @@ export async function resolve(specifier, context, next) {
     });
     url = pathToFileURL(resolution).href;
   } catch (error) {
+    console.log(error);
     if (error.code === 'MODULE_NOT_FOUND') {
       // Match Node's error code
       error.code = 'ERR_MODULE_NOT_FOUND';

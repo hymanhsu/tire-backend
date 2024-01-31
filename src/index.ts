@@ -1,5 +1,6 @@
 // npx ts-node src/index.ts
 
+import { cwd } from 'node:process';
 import express, { Express, Request, Response } from "express";
 import responseTime from 'response-time';
 import dotenv from "dotenv";
@@ -20,8 +21,12 @@ import { productRouter } from '@App/api/product';
 // load .env
 let envFile = '.env';
 if (process.env.NODE_ENV != undefined) {
-    envFile = `.env.${process.env.NODE_ENV}`;
+    const envName = `${process.env.NODE_ENV}`;
+    const env = envName.trim();
+    envFile = `.env.${env}`;
 }
+console.log("envFile=["+envFile+"]");
+console.log("cwd="+cwd());
 dotenv.config({ path: envFile });
 
 const app: Express = express();
@@ -64,6 +69,8 @@ app.use("/api/product", productRouter);
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port} with ${process.env.TZ}`);
+    console.log(`[server]: Server is listening at port ${port} with ${process.env.TZ}`);
 });
 
+// Export the Express API (for vercel)
+export default app;
