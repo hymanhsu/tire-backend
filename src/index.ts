@@ -1,13 +1,13 @@
 // npx ts-node src/index.ts
 
-import { cwd } from 'node:process';
+import { cwd } from 'process';
 import express, { Express, Request, Response } from "express";
 import responseTime from 'response-time';
 import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
 import morganBody from 'morgan-body';
-import { heloRouter } from '@App/api/helo/helo1';
+import { heloRouter } from '@App/api/helo';
 import { authRouter } from '@App/api/auth';
 import { userRouter } from '@App/api/user';
 import { merchantRouter } from '@App/api/merchant';
@@ -29,7 +29,7 @@ console.log("envFile=["+envFile+"]");
 console.log("cwd="+cwd());
 dotenv.config({ path: envFile });
 
-const app: Express = express();
+const app = express();
 const port = process.env.PORT || 3000;
 
 const filterByMorgan = (request: express.Request, response: express.Response):boolean => {

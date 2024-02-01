@@ -24,7 +24,7 @@ describe('auth module', () => {
         expect(token).toMatch(/.+\..+\..+/);
         const verifyResult = await check_token(token, false);
         // log("sesssssssssssss = "+JSON.stringify(loginSession));
-        expect(verifyResult.loginSession.role_id).toBe("ROOT");
+        expect(verifyResult.loginSession.role).toBe("ROOT");
     });
 
     test('verify_token failed', async () => {
