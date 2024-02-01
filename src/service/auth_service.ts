@@ -1,8 +1,16 @@
-import { find_user_by_loginName, UserTtl, add_customer_with_auth, find_customer_by_loginName, 
-    add_user_loginSession, find_base_role, find_merchant_roles, update_user_loginSession, add_customer_loginSession, update_customer_loginSession, invalidate_customer_loginSession, invalidate_user_loginSession } from "@App/dao/user_dao"
-import { CError, FailToCheckParam, FailToUpdateToken, FailToVerifyToken, NotFoundUserRole } from "@App/util/errcode"
-import { ROLE_CUST, get_session_ttl } from "@App/util/constants"
-import { generate_token, verify_token, LoginSession, RoleOption } from "@App/util/jwtoken";
+import {
+    find_user_by_loginName, UserTtl, add_customer_with_auth, find_customer_by_loginName,
+    add_user_loginSession, find_base_role, find_merchant_roles, update_user_loginSession,
+    add_customer_loginSession, update_customer_loginSession, invalidate_customer_loginSession,
+    invalidate_user_loginSession
+} from "../dao/user_dao.js"
+import {
+    FailToCheckParam, FailToUpdateToken, FailToVerifyToken,
+    NotFoundUserRole
+} from "../util/errcode.js"
+import { ROLE_CUST, get_session_ttl } from "../util/constants.js"
+import { generate_token, verify_token, LoginSession, RoleOption } from "../util/jwtoken.js";
+
 
 /**
  * Signup (as customer)
@@ -64,11 +72,11 @@ export type LoginAsUserResult = {
  * @returns  JWT token
  */
 export async function loginAsUser(loginName: string, password: string, userAgent: string): Promise<LoginAsUserResult> {
-    try{
+    try {
         // query user info by login name and password
         const userTtl: UserTtl = await find_user_by_loginName(loginName, password);
         const role: string = await find_base_role(userTtl.id);
-        if(role != ""){
+        if (role != "") {
             // for admin / root
             const loginSession: LoginSession = await add_user_loginSession(userTtl.id, role, userAgent, userTtl.session_ttl);
             const token = generate_token(loginSession, loginSession.ttl);
@@ -79,11 +87,11 @@ export async function loginAsUser(loginName: string, password: string, userAgent
         }
         // explore role
         const roleOptions: RoleOption[] = await find_merchant_roles(userTtl.id);
-        if(roleOptions.length == 0){
+        if (roleOptions.length == 0) {
             return Promise.reject(NotFoundUserRole);
         }
         // if user only have one role
-        if(roleOptions.length == 1){
+        if (roleOptions.length == 1) {
             let loginSession: LoginSession = await add_user_loginSession(userTtl.id, "", userAgent, userTtl.session_ttl);
             const roleOption: RoleOption = roleOptions.at(0) as RoleOption;
             loginSession.role_option = roleOption; // set role_option
@@ -107,7 +115,7 @@ export async function loginAsUser(loginName: string, password: string, userAgent
             token: tmpToken,
             roleOptions: roleOptions
         });
-    }catch(error){
+    } catch (error) {
         console.log("error = " + error);
         return Promise.reject(error);
     }
@@ -122,19 +130,19 @@ export async function loginAsUser(loginName: string, password: string, userAgent
  * @param userAgent 
  * @returns 
  */
-export async function loginProceedAsUser(tmpToken: string, session: LoginSession, 
+export async function loginProceedAsUser(tmpToken: string, session: LoginSession,
     role_options: RoleOption[], selected: number, userAgent: string): Promise<LoginAsUserResult> {
-    try{
+    try {
         const decoded = verify_token(tmpToken);
-        if(decoded == null){
+        if (decoded == null) {
             return Promise.reject(FailToVerifyToken);
         }
         const tmpLoginSession = decoded as LoginSession;
-        if(tmpLoginSession.user_id != session.user_id){
+        if (tmpLoginSession.user_id != session.user_id) {
             return Promise.reject(FailToCheckParam);
         }
         const optionsSize = role_options.length;
-        if(selected < 0 || selected >=  optionsSize){
+        if (selected < 0 || selected >= optionsSize) {
             return Promise.reject(FailToCheckParam);
         }
         const selectRoleOption: RoleOption = role_options.at(selected) as RoleOption;
@@ -146,7 +154,7 @@ export async function loginProceedAsUser(tmpToken: string, session: LoginSession
             loginSession: loginSession,
             token: token,
         });
-    }catch(error){
+    } catch (error) {
         console.log("error = " + error);
         return Promise.reject(error);
     }
@@ -169,22 +177,22 @@ export async function check_token(token: string, update: boolean): Promise<Verif
         const decoded = verify_token(token, true);
         if (decoded == null)
             return Promise.reject(FailToVerifyToken);
-        
+
         const loginSession = decoded as LoginSession;
         const role = loginSession.role;
 
         const now = Math.floor(Date.now() / 1000);
-        if(now > loginSession.exp ){
-            if(Math.floor(Date.now() / 1000) - loginSession.exp > 3 * 24 * 60 * 60){ // expired 3 days, reject refresh
+        if (now > loginSession.exp) {
+            if (Math.floor(Date.now() / 1000) - loginSession.exp > 3 * 24 * 60 * 60) { // expired 3 days, reject refresh
                 return Promise.reject(FailToUpdateToken);
             }
         }
 
         if (update) {
             // forcely update even if has expired
-            if(role == ROLE_CUST){
+            if (role == ROLE_CUST) {
                 update_customer_loginSession(loginSession.id);
-            }else{
+            } else {
                 update_user_loginSession(loginSession.id);
             }
             let newToken = generate_token(loginSession, loginSession.ttl);
@@ -193,19 +201,19 @@ export async function check_token(token: string, update: boolean): Promise<Verif
                 newToken: newToken
             });
         }
-        
+
         // check expire time if near (<10min)
-        if(now < loginSession.exp && loginSession.exp - now > 10 * 60){
+        if (now < loginSession.exp && loginSession.exp - now > 10 * 60) {
             // do nothing
             return Promise.resolve({
                 loginSession: loginSession,
                 newToken: ""
             });
-        }else{
+        } else {
             // need to update token
-            if(role == ROLE_CUST){
+            if (role == ROLE_CUST) {
                 update_customer_loginSession(loginSession.id);
-            }else{
+            } else {
                 update_user_loginSession(loginSession.id);
             }
             let newToken = generate_token(loginSession, loginSession.ttl);
@@ -234,9 +242,9 @@ export async function logout(token: string): Promise<void> {
         const loginSession = decoded as LoginSession;
         const role = loginSession.role;
         const sessionId = loginSession.id;
-        if(role == ROLE_CUST){
+        if (role == ROLE_CUST) {
             invalidate_customer_loginSession(sessionId);
-        }else{
+        } else {
             invalidate_user_loginSession(sessionId);
         }
         return Promise.resolve();

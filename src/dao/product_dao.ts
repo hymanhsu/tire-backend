@@ -1,17 +1,19 @@
 /**
  * Product DAO
  */
-import { GeneralObject } from '@App/util/constants';
-import { prisma } from '@App/util/dbwrapper';
-import {
-    CannotRemoveCategoryWithChildren, DuplicatedAttrTemplateDetail, ExceedCategoryMaxLevel, FailToCreateAttrTemplate, FailToCreateBrand,
-    FailToCreateCategory, FailToCreateProduct, FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, FailToDeleteProduct, FailToFindProductAttrs, FailToUpdateProduct, FailToUpdateProductAttrs, NotFoundCategories
-} from '@App/util/errcode';
-import { generate_id, generate_pretty_id } from '@App/util/genid';
 import {
     p_categories, p_brands,
     p_attr_templates, p_attr_template_details, p_products, p_product_attrs
 } from '@prisma/client';
+import { prisma } from '../util/dbwrapper.js';
+import { GeneralObject } from '../util/constants.js';
+import {
+    CannotRemoveCategoryWithChildren, DuplicatedAttrTemplateDetail, ExceedCategoryMaxLevel, 
+    FailToCreateAttrTemplate, FailToCreateBrand, FailToCreateCategory, FailToCreateProduct, 
+    FailToDeleteAttrTemplate, FailToDeleteBrand, FailToDeleteCategory, FailToDeleteProduct, 
+    FailToFindProductAttrs, FailToUpdateProduct, FailToUpdateProductAttrs, NotFoundCategories
+} from '../util/errcode.js';
+import { generate_id, generate_pretty_id } from '../util/genid.js';
 
 
 export type p_categories_tree_node = {

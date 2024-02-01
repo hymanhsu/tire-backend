@@ -7,15 +7,15 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
 import morganBody from 'morgan-body';
-import { heloRouter } from '@App/api/helo';
-import { authRouter } from '@App/api/auth';
-import { userRouter } from '@App/api/user';
-import { merchantRouter } from '@App/api/merchant';
-import { workshopRouter } from '@App/api/workshop';
-import { categoryRouter } from '@App/api/category';
-import { brandRouter } from '@App/api/brand';
-import { productAttrRouter } from '@App/api/product_attr';
-import { productRouter } from '@App/api/product';
+import { heloRouter } from './api/helo.js';
+import { authRouter } from './api/auth.js';
+import { userRouter } from './api/user.js';
+import { merchantRouter } from './api/merchant.js';
+import { workshopRouter } from './api/workshop.js';
+import { categoryRouter } from './api/category.js';
+import { brandRouter } from './api/brand.js';
+import { productAttrRouter } from './api/product_attr.js';
+import { productRouter } from './api/product.js';
 
 
 // load .env

@@ -1,9 +1,13 @@
 import express, { Express, Request, Response } from "express"
-import { checkAuthToken, LoginSession } from "@App/util/jwtoken";
-import { BasicChangeStatusRequest, BasicMerchantRequest, NormalCreateDeleteRequest } from "@App/util/constants";
+import { checkAuthToken, LoginSession } from "../util/jwtoken.js";
 import {
-    find_all_products, add_product, remove_product, update_product_status, find_product_attrs, p_product_attrs_simple, update_product_attrs,
-} from "@App/dao/product_dao";
+    BasicChangeStatusRequest, BasicMerchantRequest,
+    NormalCreateDeleteRequest
+} from "../util/constants.js";
+import {
+    find_all_products, add_product, remove_product, update_product_status,
+    find_product_attrs, p_product_attrs_simple, update_product_attrs,
+} from "../dao/product_dao.js";
 
 export const productRouter = express.Router();
 
@@ -40,11 +44,11 @@ productRouter.post("/queryProducts", checkAuthToken, async (req: Request, res: R
 
 
 type AddProductRequest = BasicMerchantRequest & {
-    spu_name: string, 
-    category_id: string, 
-    brand_id: string, 
-    attr_templ_id: string, 
-    title: string, 
+    spu_name: string,
+    category_id: string,
+    brand_id: string,
+    attr_templ_id: string,
+    title: string,
     description: string
 }
 
@@ -59,8 +63,8 @@ productRouter.post("/addProduct", checkAuthToken, async (req: Request, res: Resp
         return;
     }
     const addProductRequest = req.body as AddProductRequest;
-    add_product(addProductRequest.merchant_id, addProductRequest.spu_name, addProductRequest.category_id, 
-        addProductRequest.brand_id, addProductRequest.attr_templ_id, addProductRequest.title, 
+    add_product(addProductRequest.merchant_id, addProductRequest.spu_name, addProductRequest.category_id,
+        addProductRequest.brand_id, addProductRequest.attr_templ_id, addProductRequest.title,
         addProductRequest.description)
         .then((productId) => {
             res.json(
@@ -144,7 +148,7 @@ productRouter.post("/changeProductStatus", checkAuthToken, async (req: Request, 
 
 
 type QueryProductAttrsRequest = {
-    product_id: string, 
+    product_id: string,
 }
 
 productRouter.post("/queryProductAttrs", checkAuthToken, async (req: Request, res: Response) => {
@@ -179,7 +183,7 @@ productRouter.post("/queryProductAttrs", checkAuthToken, async (req: Request, re
 
 
 type UpdateProductAttrsRequest = p_product_attrs_simple & {
-    product_id: string, 
+    product_id: string,
 }
 
 productRouter.post("/updateProductAttrs", checkAuthToken, async (req: Request, res: Response) => {

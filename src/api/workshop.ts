@@ -1,12 +1,10 @@
 import express, { Express, Request, Response } from "express"
-import { checkAuthToken, LoginSession } from "@App/util/jwtoken"
-import { NormalCreateDeleteRequest } from "@App/util/constants";
+import { checkAuthToken, LoginSession } from "../util/jwtoken.js";
+import { NormalCreateDeleteRequest } from "../util/constants.js";
 import {
-    add_member_to_workshop, add_merchant, add_workshop, find_all_merchant_owners,
-    find_members_by_merchant, find_members_by_workshop, find_merchant_by_id, find_merchants,
-    find_workshop_by_id, find_workshops_by_merchant, remove_member_from_workshop, remove_merchant,
-    remove_workshop
-} from "@App/dao/merchant_dao";
+    add_member_to_workshop, add_workshop, remove_workshop, find_members_by_workshop,
+    find_workshop_by_id, find_workshops_by_merchant, remove_member_from_workshop,
+} from "../dao/merchant_dao.js";
 
 export const workshopRouter = express.Router();
 

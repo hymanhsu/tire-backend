@@ -2,10 +2,10 @@ import express, { Express, Request, Response } from "express"
 import {
     create_administrator, create_merchant_owner, create_workshop_manager,
     create_workshop_staff, query_userinfo
-} from "@App/service/user_service"
-import { checkAuthToken, LoginSession } from "@App/util/jwtoken"
-import { NormalCreateDeleteRequest, ROLES_WITH_AMDIN, allowByRole } from "@App/util/constants";
-import { find_all_administrators, remove_user } from "@App/dao/user_dao";
+} from "../service/user_service.js";
+import { checkAuthToken } from "../util/jwtoken.js";
+import { NormalCreateDeleteRequest, ROLES_WITH_AMDIN, allowByRole } from "../util/constants.js";
+import { find_all_administrators, remove_user } from "../dao/user_dao.js";
 
 export const userRouter = express.Router();
 

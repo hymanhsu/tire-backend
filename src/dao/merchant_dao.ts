@@ -1,13 +1,14 @@
 /**
  * Merchant DAO
  */
-import { prisma } from '@App/util/dbwrapper';
+import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
+import { prisma } from '../util/dbwrapper.js';
 import {
     FailToCreateMerchant, FailToCreateWorkshop, FailToDeleteMerchant,
     FailToDeleteWorkshop, NotFoundMerchant, NotFoundUserRecord, NotFoundWorkshop
-} from '@App/util/errcode';
-import { generate_id } from '@App/util/genid';
-import { merchants, merchant_workshops, merchant_members, u_users } from '@prisma/client';
+} from '../util/errcode.js';
+import { generate_id } from '../util/genid.js';
+
 
 /**
  * Create a merchant

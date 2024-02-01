@@ -1,10 +1,10 @@
 import express, { Express, Request, Response } from "express"
-import { checkAuthToken, LoginSession } from "@App/util/jwtoken";
-import { BasicMerchantRequest, NormalCreateDeleteRequest } from "@App/util/constants";
+import { checkAuthToken, LoginSession } from "../util/jwtoken.js";
+import { BasicMerchantRequest, NormalCreateDeleteRequest } from "../util/constants.js";
 import {
     find_all_attr_templates, add_attr_template, add_attr_template_detail,
     remove_attr_template, remove_attr_template_detail, find_all_attr_template_details
-} from "@App/dao/product_dao";
+} from "../dao/product_dao.js";
 
 export const productAttrRouter = express.Router();
 

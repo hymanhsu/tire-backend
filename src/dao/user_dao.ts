@@ -1,14 +1,16 @@
 /**
  * User DAO
  */
-import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF } from '@App/util/constants';
-import { prisma } from '@App/util/dbwrapper'
-import { md5_string } from "@App/util/encrypt"
-import { CError, FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord, NotFoundUserRecord } from '@App/util/errcode'
-import { generate_id } from '@App/util/genid';
-import { LoginSession, RoleOption } from '@App/util/jwtoken';
 import { c_customers, u_base_roles, u_users } from '@prisma/client';
-// import { u_users } from '@prisma/client';
+import { prisma } from '../util/dbwrapper.js';
+import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF } from '../util/constants.js';
+import { md5_string } from "../util/encrypt.js";
+import {
+    FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession,
+    NotFoundAuthenRecord, NotFoundUserRecord
+} from '../util/errcode.js';
+import { generate_id } from '../util/genid.js';
+import { LoginSession, RoleOption } from '../util/jwtoken.js';
 
 
 /**
@@ -115,7 +117,7 @@ export async function add_user_with_auth(userWithAuth: UserWithAuth): Promise<st
             // create role record only for users like merchant's owner/manager/staff
             if ((userWithAuth.role == ROLE_MERT
                 || userWithAuth.role == ROLE_MANR
-                || userWithAuth.role == ROLE_STAF) 
+                || userWithAuth.role == ROLE_STAF)
                 && userWithAuth.merchant_id != "") {
                 const member = await tx.merchant_members.create({
                     data: {
@@ -144,7 +146,7 @@ export async function add_user_with_auth(userWithAuth: UserWithAuth): Promise<st
  * @returns 
  */
 export async function remove_user(userId: string): Promise<void> {
-    try{
+    try {
         return await prisma.$transaction(async (tx): Promise<void> => {
             await tx.u_users.delete({
                 where: {
@@ -171,7 +173,7 @@ export async function remove_user(userId: string): Promise<void> {
                     user_id: userId,
                 }
             });
-        }); 
+        });
     } catch (error) {
         console.error(error);
         return Promise.reject(FailToCreateUser);
@@ -284,7 +286,7 @@ export async function find_base_role(userId: string): Promise<string> {
     return Promise.resolve("");
 }
 
-export async function find_merchant_roles(userId: string): Promise<RoleOption[]>{
+export async function find_merchant_roles(userId: string): Promise<RoleOption[]> {
     const roleOptions: RoleOption[] = await prisma.$queryRawUnsafe(
         'SELECT r.*,  w.workshop_name  FROM ' +
         '(SELECT mm.role, mm.merchant_id, m.merchant_name, mm.workshop_id ' +
@@ -294,12 +296,12 @@ export async function find_merchant_roles(userId: string): Promise<RoleOption[]>
         userId
     );
     const result: RoleOption[] = [];
-    roleOptions.forEach((item,index) => {
-        if(item.role == ROLE_MERT){
+    roleOptions.forEach((item, index) => {
+        if (item.role == ROLE_MERT) {
             result.push(item);
-        }else{
+        } else {
             // NOT owner, must need workshop id
-            if(item.workshop_id != null && item.workshop_id.trim() != ''){
+            if (item.workshop_id != null && item.workshop_id.trim() != '') {
                 result.push(item);
             }
         }

@@ -1,5 +1,5 @@
 import { UserTtl, add_user_with_auth, find_customer_by_loginName  } from "../user_dao"
-import { FailToCreateUser, NotFoundAuthenRecord } from '@App/util/errcode'
+import { FailToCreateUser, NotFoundAuthenRecord } from '../../util/errcode'
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { log } from "console"
 

@@ -2,8 +2,8 @@ import express, { Express, Request, Response } from "express"
 import {
     signup, login, check_token, logout, LoginResult, LoginAsUserResult,
     loginAsUser, loginProceedAsUser
-} from "@App/service/auth_service"
-import { LoginSession, RoleOption } from "@App/util/jwtoken";
+} from "../service/auth_service.js"
+import { LoginSession, RoleOption } from "../util/jwtoken.js";
 
 export const authRouter = express.Router();
 

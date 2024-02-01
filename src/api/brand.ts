@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express"
-import { checkAuthToken, LoginSession } from "@App/util/jwtoken";
-import { NormalCreateDeleteRequest } from "@App/util/constants";
-import { find_all_categories, add_category, remove_category, find_all_brands, add_brand, remove_brand } from "@App/dao/product_dao";
+import { checkAuthToken, LoginSession } from "../util/jwtoken.js";
+import { NormalCreateDeleteRequest } from "../util/constants.js";
+import { find_all_brands, add_brand, remove_brand } from "../dao/product_dao.js";
 
 export const brandRouter = express.Router();
 

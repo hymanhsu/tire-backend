@@ -1,6 +1,6 @@
 import { log } from "console";
 import { login, check_token, signup } from "../auth_service"
-import { FailToCreateUser, FailToVerifyToken } from "@App/util/errcode";
+import { FailToCreateUser, FailToVerifyToken } from "../../util/errcode";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 
