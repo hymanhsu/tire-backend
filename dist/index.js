@@ -25,6 +25,7 @@ if (process.env.NODE_ENV != undefined) {
 console.log("envFile=[" + envFile + "]");
 console.log("cwd=" + cwd());
 dotenv.config({ path: envFile });
+console.log(process.env);
 const app = express();
 const port = process.env.PORT || 3000;
 const filterByMorgan = (request, response) => {
@@ -49,7 +50,7 @@ if (process.env.NODE_ENV != 'production') {
     });
 }
 // set routers
-app.use("/api/helo", heloRouter);
+app.use("/", heloRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/merchant", merchantRouter);
