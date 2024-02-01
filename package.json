@@ -12,6 +12,7 @@
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
     "wp_build": "cross-env NODE_ENV=production npx webpack --fail-on-warnings --config webpack.config.cjs",
     "wp_start": "node ./build/bundle.cjs",
+    "postinstall": "npx prisma generate",
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts"
   },
   "type": "module",
