@@ -19,6 +19,7 @@ import { productRouter } from './api/product.js';
 
 
 // load .env
+// Note: dotenv don't work in Vercel, so have to set them in the Vercel dashboard
 let envFile = '.env';
 if (process.env.NODE_ENV != undefined) {
     const envName = `${process.env.NODE_ENV}`;
