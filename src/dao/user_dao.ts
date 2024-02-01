@@ -7,7 +7,7 @@ import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF } from '../util/constants.js
 import { md5_string } from "../util/encrypt.js";
 import {
     FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession,
-    NotFoundAuthenRecord, NotFoundUserRecord
+    NotFoundCustomerAuthenRecord, NotFoundUserAuthenRecord, NotFoundUserRecord
 } from '../util/errcode.js';
 import { generate_id } from '../util/genid.js';
 import { LoginSession, RoleOption } from '../util/jwtoken.js';
@@ -203,15 +203,15 @@ export async function find_customer_by_loginName(loginName: string, password: st
             loginName, loginName, loginName
         );
         return new Promise((resolve, reject) => {
-            if (userInfos === undefined || userInfos.length === 0) {
-                reject(NotFoundAuthenRecord);
+            if (userInfos.length == 0) {
+                reject(NotFoundCustomerAuthenRecord);
             } else {
                 resolve(userInfos[0]);
             }
         });
     } catch (error) {
         console.error(error);
-        return Promise.reject(NotFoundAuthenRecord);
+        return Promise.reject(NotFoundCustomerAuthenRecord);
     }
 }
 
@@ -232,15 +232,15 @@ export async function find_user_by_loginName(loginName: string, password: string
             loginName, loginName, loginName
         );
         return new Promise((resolve, reject) => {
-            if (userInfos === undefined || userInfos.length === 0) {
-                reject(NotFoundAuthenRecord);
+            if (userInfos.length == 0) {
+                reject(NotFoundUserAuthenRecord);
             } else {
                 resolve(userInfos[0]);
             }
         });
     } catch (error) {
         console.error(error);
-        return Promise.reject(NotFoundAuthenRecord);
+        return Promise.reject(NotFoundUserAuthenRecord);
     }
 }
 
