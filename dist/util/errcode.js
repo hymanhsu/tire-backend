@@ -17,7 +17,8 @@ export class CError extends Error {
  * 20xxxx  =  errors related to database
  * 21xxxx  =  errors related to network
  */
-export const NotFoundAuthenRecord = new CError(100001, 'NotFoundAuthenRecord', 'Not found the record of authentication!');
+export const NotFoundCustomerAuthenRecord = new CError(100001, 'NotFoundCustomerAuthenRecord', 'Not found the record of authentication of customer!');
+export const NotFoundUserAuthenRecord = new CError(100001, 'NotFoundUserAuthenRecord', 'Not found the record of authentication of user!');
 export const NotFoundUserRecord = new CError(100002, 'NotFoundUserRecord', 'Not found the record of user!');
 export const NotFoundUserRole = new CError(100002, 'NotFoundUserRole', 'Not found the role of user!');
 export const FailToUpdateToken = new CError(100010, 'FailToUpdateToken', 'Fail to update token!');

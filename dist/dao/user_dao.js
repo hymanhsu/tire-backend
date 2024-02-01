@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { prisma } from '../util/dbwrapper.js';
 import { ROLE_ADMN, ROLE_MANR, ROLE_MERT, ROLE_STAF } from '../util/constants.js';
 import { md5_string } from "../util/encrypt.js";
-import { FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundAuthenRecord, NotFoundUserRecord } from '../util/errcode.js';
+import { FailToCreateLoginSessionRecord, FailToCreateUser, FailToInvalidateLoginSession, NotFoundCustomerAuthenRecord, NotFoundUserAuthenRecord, NotFoundUserRecord } from '../util/errcode.js';
 import { generate_id } from '../util/genid.js';
 /**
  * Create customer & auth records in a transaction
@@ -183,8 +183,8 @@ export function find_customer_by_loginName(loginName, password) {
                 'WHERE u.id = a.user_id AND u.invalid = FALSE AND a.invalid = FALSE ' +
                 'AND a.auth_pass = $1 AND (u.phone_number = $2 OR u.email = $3 OR a.login_name = $4)', encodedPassword, loginName, loginName, loginName);
             return new Promise((resolve, reject) => {
-                if (userInfos === undefined || userInfos.length === 0) {
-                    reject(NotFoundAuthenRecord);
+                if (userInfos.length == 0) {
+                    reject(NotFoundCustomerAuthenRecord);
                 }
                 else {
                     resolve(userInfos[0]);
@@ -193,7 +193,7 @@ export function find_customer_by_loginName(loginName, password) {
         }
         catch (error) {
             console.error(error);
-            return Promise.reject(NotFoundAuthenRecord);
+            return Promise.reject(NotFoundCustomerAuthenRecord);
         }
     });
 }
@@ -211,8 +211,8 @@ export function find_user_by_loginName(loginName, password) {
                 'WHERE u.id = a.user_id AND u.invalid = FALSE AND a.invalid = FALSE ' +
                 'AND a.auth_pass = $1 AND (u.phone_number = $2 OR u.email = $3 OR a.login_name = $4)', encodedPassword, loginName, loginName, loginName);
             return new Promise((resolve, reject) => {
-                if (userInfos === undefined || userInfos.length === 0) {
-                    reject(NotFoundAuthenRecord);
+                if (userInfos.length == 0) {
+                    reject(NotFoundUserAuthenRecord);
                 }
                 else {
                     resolve(userInfos[0]);
@@ -221,7 +221,7 @@ export function find_user_by_loginName(loginName, password) {
         }
         catch (error) {
             console.error(error);
-            return Promise.reject(NotFoundAuthenRecord);
+            return Promise.reject(NotFoundUserAuthenRecord);
         }
     });
 }
