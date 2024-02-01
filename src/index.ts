@@ -6,6 +6,7 @@ import responseTime from 'response-time';
 import dotenv from "dotenv";
 import cors from 'cors';
 import helmet from 'helmet';
+import * as fs from 'fs';
 import morganBody from 'morgan-body';
 import { heloRouter } from './api/helo.js';
 import { authRouter } from './api/auth.js';
@@ -28,7 +29,12 @@ if (process.env.NODE_ENV != undefined) {
 }
 console.log("envFile=["+envFile+"]");
 console.log("cwd="+cwd());
-dotenv.config({ path: envFile });
+if(fs.existsSync(envFile)){
+    console.log(envFile+" exist!");
+    dotenv.config({ path: envFile });
+}else{
+    console.log(envFile+" do not exist!");
+}
 console.log(process.env);
 
 const app = express();
