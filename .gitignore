@@ -11,7 +11,7 @@
 
 
 # production
-dist
+# dist
 build
 
 # misc
